@@ -19,6 +19,7 @@ class PadsViewModel: ObservableObject {
     @Published var showingRecorderSheet = false
     @Published var recordingPadIndex: Int?
     @Published var showAddOptions = false
+    @Published var isPauseEnable: Bool = false
     
     private var audioPlayers: [UUID: AVAudioPlayer] = [:]
     private let recorder = AudioRecorder()

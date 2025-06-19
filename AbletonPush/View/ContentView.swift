@@ -12,6 +12,7 @@ import UniformTypeIdentifiers
 // MARK: - Main Content View
 struct ContentView: View {
     @StateObject private var viewModel = PadsViewModel()
+    @StateObject private var utilityViewModel = UtilityButtonsViewModel()
     
     private let columns = Array(repeating: GridItem(.flexible()), count: 4)
 
@@ -21,6 +22,16 @@ struct ContentView: View {
                 HeaderView {
                     viewModel.showingFileImporter = true
                 }
+                
+                
+                UtilityButtons(
+                    onLoop: { utilityViewModel.handleLoop() },
+                    onReset: { utilityViewModel.handleReset() },
+                    onPlayPause: { utilityViewModel.handlePlayPause() },
+                    onEdit: { utilityViewModel.handleEdit() },
+                    isLoopEnabled: utilityViewModel.isLoopEnabled,
+                    isPlaying: utilityViewModel.isPlaying
+                )
 
                 PadsGridView(
                     pads: viewModel.pads,
