@@ -31,7 +31,7 @@ struct PadsGridView: View {
                     )
                 }
 
-                if pads.count < 16 {
+                if pads.count < 12 {
                     AddPadButton(onTap: onAddPad)
                 }
             }
