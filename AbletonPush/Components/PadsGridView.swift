@@ -16,19 +16,32 @@ struct PadsGridView: View {
     let onPadRemove: (Int) -> Void
     let onPadRecord: (Int) -> Void
     let onAddPad: () -> Void
+    let isEditMode: Bool  // New parameter
 
     var body: some View {
         ScrollView {
             LazyVGrid(columns: columns, spacing: 12) {
                 ForEach(Array(pads.enumerated()), id: \.element.id) { index, pad in
-                    SoundPadButton(
-                        pad: pad,
-                        index: index,
-                        onTap: { onPadTap(pad) },
-                        onReplace: { onPadReplace(index) },
-                        onRemove: pad.isDefault ? nil : { onPadRemove(index) },
-                        onRecord: { onPadRecord(index) }
-                    )
+                    ZStack(alignment: .topTrailing) {
+                        SoundPadButton(
+                            pad: pad,
+                            index: index,
+                            onTap: { onPadTap(pad) },
+                            onReplace: { onPadReplace(index) },
+                            onRemove: pad.isDefault ? nil : { onPadRemove(index) },
+                            onRecord: { onPadRecord(index) }
+                        )
+
+                        // Show edit icon if in edit mode and pad is default
+                        if isEditMode && pad.isDefault {
+                            Image(systemName: "pencil.circle.fill")
+                                .foregroundColor(.yellow)
+                                .background(Color.black)
+                                .clipShape(Circle())
+                                .font(.system(size: 20))
+                                .offset(x: -2, y: 2)
+                        }
+                    }
                 }
 
                 if pads.count < 12 {
@@ -57,6 +70,7 @@ struct PadsGridView: View {
         onPadReplace: { _ in print("Replace tapped") },
         onPadRemove: { _ in print("Remove tapped") },
         onPadRecord: { _ in print("Record tapped") },
-        onAddPad: { print("Add pad tapped") }
+        onAddPad: { print("Add pad tapped") },
+        isEditMode: true // Preview edit mode ON
     )
-} 
+}

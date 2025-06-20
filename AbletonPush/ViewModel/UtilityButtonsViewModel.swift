@@ -70,7 +70,8 @@ class UtilityButtonsViewModel: ObservableObject {
     
     // MARK: - TODO EDIT BUTTON
     func handleEdit() {
-        
+        guard let padsVM = padsViewModel else { return }
+        padsVM.isEditMode.toggle()
     }
     
     // MARK: - Audio Management

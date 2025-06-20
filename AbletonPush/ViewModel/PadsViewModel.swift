@@ -21,6 +21,10 @@ class PadsViewModel: ObservableObject {
     @Published var recordingPadIndex: Int?
     @Published var showAddOptions = false
     @Published var isPauseEnable: Bool = false
+    @Published var isEditMode: Bool = false
+    @Published var editingPadIndex: Int? = nil
+    @Published var showingPadOptions = false
+    @Published var selectedPadIndexForEdit: Int? = nil
     
     private var audioPlayers: [UUID: AVAudioPlayer] = [:]
     private let recorder = AudioRecorder()
@@ -166,12 +170,13 @@ class PadsViewModel: ObservableObject {
         let pad = pads[index]
         audioPlayers[pad.id]?.stop()
         audioPlayers.removeValue(forKey: pad.id)
-        
+
         if !pad.isDefault {
             try? FileManager.default.removeItem(at: pad.fileURL)
         }
-        
+
         pads.remove(at: index)
+        selectedPadIndexForEdit = nil  // ✅ clear selection after removing
         saveCustomPads()
     }
     
@@ -202,33 +207,32 @@ class PadsViewModel: ObservableObject {
     func handleFileImport(result: Result<[URL], Error>) {
         do {
             guard let selectedFile = try result.get().first else { return }
-            
+
             guard selectedFile.startAccessingSecurityScopedResource() else {
                 throw NSError(domain: "SecurityError", code: 403, userInfo: [NSLocalizedDescriptionKey: "Cannot access selected file"])
             }
-            
+
             defer { selectedFile.stopAccessingSecurityScopedResource() }
-            
+
             let fileName = selectedFile.lastPathComponent
             let savedURL = getDocumentsDirectory().appendingPathComponent(fileName)
-            
+
             if FileManager.default.fileExists(atPath: savedURL.path) {
                 try FileManager.default.removeItem(at: savedURL)
             }
-            
+
             try FileManager.default.copyItem(at: selectedFile, to: savedURL)
-            
+
             let padName = savedURL.deletingPathExtension().lastPathComponent
             let newPad = SoundPad(name: padName, fileURL: savedURL, isDefault: false)
-            
-            if let index = replacingPadIndex {
+
+            // Replace existing pad if editing
+            if let index = editingPadIndex {
                 pads[index] = newPad
-            } else {
-                pads.append(newPad)
+                editingPadIndex = nil
             }
-            
+            selectedPadIndexForEdit = nil
             saveCustomPads()
-            replacingPadIndex = nil
             
         } catch {
             print("Import error: \(error)")
