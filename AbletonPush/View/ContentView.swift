@@ -15,7 +15,7 @@ struct ContentView: View {
     @StateObject private var utilityViewModel = UtilityButtonsViewModel()
     
     private let columns = Array(repeating: GridItem(.flexible()), count: 4)
-
+    
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
@@ -23,7 +23,18 @@ struct ContentView: View {
                     viewModel.showingFileImporter = true
                 }
                 
+                // Timeline(horizontal) sound yang dipilih/diclick user
+                SoundTimeline(
+                    selectedSounds: viewModel.selectedSounds,
+                    onSoundTap: { (sound: SoundPad) in
+                        viewModel.playSoundFromTimeline(sound)
+                    },
+                    onRemoveSound: { (index: Int) in 
+                        viewModel.removeSoundFromTimeline(at: index)
+                    }
+                )
                 
+                // UtilityButtons ( Loop, Reset, Play, Edit )
                 UtilityButtons(
                     onLoop: { utilityViewModel.handleLoop() },
                     onReset: { utilityViewModel.handleReset() },
@@ -33,6 +44,7 @@ struct ContentView: View {
                     isPlaying: utilityViewModel.isPlaying
                 )
 
+                // Sound Pad
                 PadsGridView(
                     pads: viewModel.pads,
                     columns: columns,
@@ -45,6 +57,12 @@ struct ContentView: View {
             }
             .background(Color.black)
             .navigationBarHidden(true)
+            .onAppear {
+                utilityViewModel.setPadsViewModel(viewModel)
+            }
+            .onChange(of: viewModel.selectedSounds.count) { count in
+                print("🔄 ViewModel selectedSounds count changed to: \(count)")
+            }
             .fileImporter(
                 isPresented: $viewModel.showingFileImporter,
                 allowedContentTypes: [.wav, .mp3, .aiff],
