@@ -2,7 +2,7 @@
 //  PadsViewModel.swift
 //  AbletonPush
 //
-//  Created by Megan Rochella on 17/06/25.
+//  Created by Megan Rochella on 20/06/25.
 //
 
 import SwiftUI
@@ -12,6 +12,7 @@ import UniformTypeIdentifiers
 @MainActor
 class PadsViewModel: ObservableObject {
     @Published var pads: [SoundPad] = []
+    @Published var selectedSounds: [SoundPad] = []
     @Published var showingFileImporter = false
     @Published var replacingPadIndex: Int?
     @Published var showingAlert = false
@@ -19,6 +20,7 @@ class PadsViewModel: ObservableObject {
     @Published var showingRecorderSheet = false
     @Published var recordingPadIndex: Int?
     @Published var showAddOptions = false
+    @Published var isPauseEnable: Bool = false
     
     private var audioPlayers: [UUID: AVAudioPlayer] = [:]
     private let recorder = AudioRecorder()
@@ -40,6 +42,14 @@ class PadsViewModel: ObservableObject {
     }
     
     func playSound(for pad: SoundPad) {
+        
+        // Ensure audio session is active
+        do {
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {
+            print("❌ Failed to activate audio session: \(error)")
+        }
+        
         audioPlayers[pad.id]?.stop()
         
         do {
@@ -52,14 +62,87 @@ class PadsViewModel: ObservableObject {
             player.play()
             audioPlayers[pad.id] = player
             
+            // efek geteran
+            let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+            impactFeedback.impactOccurred()
+            
+            // Add sound to timeline
+            addSoundToTimeline(pad)
+            
+        } catch {
+            print("❌ Play error: \(error)")
+            alertMessage = "Error playing sound: \(error.localizedDescription)"
+            showingAlert = true
+        }
+    }
+    
+    // MARK: - Timeline Management
+    
+    func addSoundToTimeline(_ sound: SoundPad) {
+        // Try to find the original sound from pads array to ensure we have the correct file URL
+        if let originalSound = pads.first(where: { $0.name == sound.name }) {
+            selectedSounds.append(originalSound)
+        } else {
+            selectedSounds.append(sound)
+        }
+    }
+    
+    func removeSoundFromTimeline(at index: Int) {
+        if selectedSounds.indices.contains(index) {
+            selectedSounds.remove(at: index)
+        }
+    }
+    
+    func clearTimeline() {
+        selectedSounds.removeAll()
+    }
+    
+    func playSoundFromTimeline(_ sound: SoundPad) {
+        
+        // Try to find the original sound from pads array to ensure we have the correct file URL
+        if let originalSound = pads.first(where: { $0.name == sound.name }) {
+            playSoundWithoutAddingToTimeline(originalSound)
+        } else {
+            print("🎵 Using timeline sound directly")
+            playSoundWithoutAddingToTimeline(sound)
+        }
+    }
+    
+    private func playSoundWithoutAddingToTimeline(_ pad: SoundPad) {
+        
+        // Ensure audio session is active
+        do {
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {
+            print("❌ Failed to activate audio session: \(error)")
+        }
+        
+        audioPlayers[pad.id]?.stop()
+        
+        do {
+            if !FileManager.default.fileExists(atPath: pad.fileURL.path) {
+                throw NSError(domain: "FileNotFound", code: 404, userInfo: [NSLocalizedDescriptionKey: "Sound file not found"])
+            }
+            
+            let player = try AVAudioPlayer(contentsOf: pad.fileURL)
+            player.prepareToPlay()
+            player.play()
+            audioPlayers[pad.id] = player
+            
+            // memberi efek getaran
             let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
             impactFeedback.impactOccurred()
             
         } catch {
-            print("Play error: \(error)")
+            print("❌ Play error: \(error)")
             alertMessage = "Error playing sound: \(error.localizedDescription)"
             showingAlert = true
         }
+    }
+    
+    func stopAllAudio() {
+        audioPlayers.values.forEach { $0.stop() }
+        audioPlayers.removeAll()
     }
     
     // MARK: - Pad Management
