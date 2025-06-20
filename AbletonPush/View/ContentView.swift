@@ -44,15 +44,25 @@ struct ContentView: View {
                     isPlaying: utilityViewModel.isPlaying
                 )
 
-                // Sound Pad
+                // Sound Padfor:
                 PadsGridView(
                     pads: viewModel.pads,
                     columns: columns,
-                    onPadTap: viewModel.playSound,
+                    onPadTap: { pad in
+                        if viewModel.isEditMode {
+                            if let index = viewModel.pads.firstIndex(where: { $0.id == pad.id }) {
+                                viewModel.selectedPadIndexForEdit = index
+                                viewModel.showingPadOptions = true
+                            }
+                        } else {
+                            viewModel.playSound(for: pad)
+                        }
+                    },
                     onPadReplace: viewModel.handlePadReplace,
                     onPadRemove: viewModel.removePad,
                     onPadRecord: viewModel.startRecording,
-                    onAddPad: viewModel.handleAddPad
+                    onAddPad: viewModel.handleAddPad,
+                    isEditMode: viewModel.isEditMode
                 )
             }
             .background(Color.black)
@@ -80,13 +90,29 @@ struct ContentView: View {
             } message: {
                 Text(viewModel.alertMessage)
             }
+
             .confirmationDialog("Add New Sound", isPresented: $viewModel.showAddOptions, titleVisibility: .visible) {
                 Button("Import File") {
                     viewModel.showingFileImporter = true
                 }
                 Button("Record Sound") {
-                    viewModel.recordingPadIndex = viewModel.pads.count // Add new pad at the end
+                    viewModel.recordingPadIndex = viewModel.pads.count
                     viewModel.showingRecorderSheet = true
+                }
+                Button("Cancel", role: .cancel) {}
+            }
+
+            .confirmationDialog("Edit Pad", isPresented: $viewModel.showingPadOptions, titleVisibility: .visible) {
+                Button("Replace") {
+                    if let index = viewModel.selectedPadIndexForEdit {
+                        viewModel.editingPadIndex = index
+                        viewModel.showingFileImporter = true
+                    }
+                }
+                Button("Remove", role: .destructive) {
+                    if let index = viewModel.selectedPadIndexForEdit {
+                        viewModel.removePad(at: index)
+                    }
                 }
                 Button("Cancel", role: .cancel) {}
             }
