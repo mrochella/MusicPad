@@ -32,8 +32,7 @@ struct PadsGridView: View {
                             onRecord: { onPadRecord(index) }
                         )
 
-                        // Show edit icon if in edit mode and pad is default
-                        if isEditMode && pad.isDefault {
+                        if isEditMode {
                             Image(systemName: "pencil.circle.fill")
                                 .foregroundColor(.yellow)
                                 .background(Color.black)
