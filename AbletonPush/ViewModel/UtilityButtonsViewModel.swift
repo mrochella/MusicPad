@@ -14,6 +14,7 @@ class UtilityButtonsViewModel: ObservableObject {
     @Published var isPlaying: Bool = false
     @Published var showingAlert = false
     @Published var alertMessage = ""
+    @Published var isTimelineEmpty: Bool = true
     
     private var audioPlayers: [UUID: AVAudioPlayer] = [:]
     private weak var padsViewModel: PadsViewModel?
@@ -27,9 +28,14 @@ class UtilityButtonsViewModel: ObservableObject {
     // MARK: - Utility Button Handlers
     
     func handleLoop() {
+        // Don't enable loop if timeline is empty
+        if isTimelineEmpty {
+            return
+        }
+        
         isLoopEnabled.toggle()
         
-        if isLoopEnabled {
+        if isLoopEnabled && !isPlaying{
             // Mulai play timeline jika ada sound di timeline
             if let padsVM = padsViewModel, !padsVM.selectedSounds.isEmpty {
                 isPlaying = true
@@ -85,6 +91,7 @@ class UtilityButtonsViewModel: ObservableObject {
     }
     
     func stopAllAudio() {
+        isLoopEnabled = false
         audioPlayers.values.forEach { $0.stop() }
         audioPlayers.removeAll()
     }
@@ -97,6 +104,17 @@ class UtilityButtonsViewModel: ObservableObject {
     
     func getPlayState() -> Bool {
         return isPlaying
+    }
+    
+    func updateTimelineEmptyState(_ isEmpty: Bool) {
+        isTimelineEmpty = isEmpty
+        
+        // If timeline becomes empty, disable loop and stop playing
+        if isEmpty {
+            isLoopEnabled = false
+            isPlaying = false
+            stopAllAudio()
+        }
     }
     
     // MARK: - Timeline Playback

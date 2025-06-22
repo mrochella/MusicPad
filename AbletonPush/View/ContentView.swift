@@ -41,7 +41,8 @@ struct ContentView: View {
                     onPlayPause: { utilityViewModel.handlePlayPause() },
                     onEdit: { utilityViewModel.handleEdit() },
                     isLoopEnabled: utilityViewModel.isLoopEnabled,
-                    isPlaying: utilityViewModel.isPlaying
+                    isPlaying: utilityViewModel.isPlaying,
+                    isTimelineEmpty: viewModel.selectedSounds.isEmpty
                 )
 
                 // Sound Padfor:
@@ -72,6 +73,7 @@ struct ContentView: View {
             }
             .onChange(of: viewModel.selectedSounds.count) { count in
                 print("🔄 ViewModel selectedSounds count changed to: \(count)")
+                utilityViewModel.updateTimelineEmptyState(count == 0)
             }
             .fileImporter(
                 isPresented: $viewModel.showingFileImporter,

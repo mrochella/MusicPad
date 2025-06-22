@@ -16,6 +16,7 @@ struct UtilityButtons: View {
     // State parameters for dynamic UI
     let isLoopEnabled: Bool
     let isPlaying: Bool
+    let isTimelineEmpty: Bool
     
     var body: some View {
         HStack(spacing: 12) {
@@ -23,7 +24,8 @@ struct UtilityButtons: View {
                 title: "Loop", 
                 icon: isLoopEnabled ? "repeat.circle.fill" : "repeat", 
                 action: onLoop,
-                isActive: isLoopEnabled
+                isActive: isLoopEnabled,
+                isTimelineEmpty: isTimelineEmpty
             )
             UtilityButton(title: "Reset", icon: "arrow.clockwise", action: onReset)
             UtilityButton(
@@ -42,12 +44,14 @@ struct UtilityButton: View {
     let icon: String
     let action: () -> Void
     let isActive: Bool?
+    let isTimelineEmpty: Bool?
     
-    init(title: String, icon: String, action: @escaping () -> Void, isActive: Bool? = nil) {
+    init(title: String, icon: String, action: @escaping () -> Void, isActive: Bool? = nil, isTimelineEmpty: Bool? = nil) {
         self.title = title
         self.icon = icon
         self.action = action
         self.isActive = isActive
+        self.isTimelineEmpty = isTimelineEmpty
     }
     
     var body: some View {
@@ -55,23 +59,24 @@ struct UtilityButton: View {
             VStack(spacing: 4) {
                 Image(systemName: icon)
                     .font(.system(size: 20, weight: .medium))
-                    .foregroundColor(isActive == true ? .black : .black)
+                    .foregroundColor(isTimelineEmpty == true ? .gray : (isActive == true ? .black : .black))
                 
                 Text(title)
                     .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(isActive == true ? .black : .black)
+                    .foregroundColor(isTimelineEmpty == true ? .gray : (isActive == true ? .black : .black))
             }
             .frame(height: 80)
             .frame(maxWidth: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(Color(red: 1.0, green: 1.0, blue: 0.0))
-                    .shadow(color: Color(red: 1.0, green: 1.0, blue: 0.0).opacity(0.6), radius: 8, x: 0, y: 0)
+                    .fill(isTimelineEmpty == true ? Color.gray.opacity(0.3) : Color(red: 1.0, green: 1.0, blue: 0.0))
+                    .shadow(color: isTimelineEmpty == true ? Color.clear : Color(red: 1.0, green: 1.0, blue: 0.0).opacity(0.6), radius: 8, x: 0, y: 0)
             )
             .cornerRadius(8)
             .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 2)
         }
         .buttonStyle(PlainButtonStyle())
+        .disabled(isTimelineEmpty == true)
     }
 }
 
@@ -80,10 +85,11 @@ struct UtilityButton: View {
         UtilityButtons(
             onLoop: { print("Loop tapped") },
             onReset: { print("Reset tapped") },
-            onPlayPause: { print("Save tapped") },
+            onPlayPause: { print("Play tapped") },
             onEdit: { print("Edit tapped") },
             isLoopEnabled: true,
-            isPlaying: false
+            isPlaying: false,
+            isTimelineEmpty: false
         )
     }
     .background(Color.black)
