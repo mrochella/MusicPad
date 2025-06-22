@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct SoundTimeline: View {
-    let selectedSounds: [SoundPad]
+    let timelineItems: [Any]
     let onSoundTap: (SoundPad) -> Void
-    let onRemoveSound: (Int) -> Void
+    let onRemoveItem: (Int) -> Void
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -22,21 +22,31 @@ struct SoundTimeline: View {
             
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
-                    ForEach(Array(selectedSounds.enumerated()), id: \.offset) { index, sound in
-                        TimelineSoundItem(
-                            sound: sound,
-                            index: index,
-                            onTap: {
-                                onSoundTap(sound) 
-                            },
-                            onRemove: {
-                                onRemoveSound(index) 
-                            }
-                        )
+                    ForEach(Array(timelineItems.enumerated()), id: \.offset) { index, item in
+                        if let sound = item as? SoundPad {
+                            TimelineSoundItem(
+                                sound: sound,
+                                index: index,
+                                onTap: {
+                                    onSoundTap(sound) 
+                                },
+                                onRemove: {
+                                    onRemoveItem(index) 
+                                }
+                            )
+                        } else if let delay = item as? DelayItem {
+                            TimelineDelayItem(
+                                delay: delay,
+                                index: index,
+                                onRemove: {
+                                    onRemoveItem(index)
+                                }
+                            )
+                        }
                     }
                     
-                    if selectedSounds.isEmpty {
-                        Text("No sounds selected")
+                    if timelineItems.isEmpty {
+                        Text("No items in timeline")
                             .font(.caption)
                             .foregroundColor(.gray)
                             .frame(maxWidth: .infinity)
@@ -95,6 +105,42 @@ struct TimelineSoundItem: View {
     }
 }
 
+struct TimelineDelayItem: View {
+    let delay: DelayItem
+    let index: Int
+    let onRemove: () -> Void
+    
+    var body: some View {
+        VStack(spacing: 4) {
+            VStack(spacing: 4) {
+                Image(systemName: "clock")
+                    .font(.system(size: 24, weight: .medium))
+                    .foregroundColor(.white)
+                
+                Text("\(String(format: "%.1f", delay.duration))s")
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundColor(.white)
+                    .lineLimit(1)
+            }
+            .frame(width: 80, height: 80)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(LinearGradient(colors: [.orange.opacity(0.8), .orange.opacity(0.6)], startPoint: .top, endPoint: .bottom)
+                    )
+            )
+            .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 2)
+            
+            Button(action: onRemove) {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.system(size: 16))
+                    .foregroundColor(.red)
+            }
+            .buttonStyle(PlainButtonStyle())
+        }
+    }
+}
+
 #Preview {
     let sampleSounds = [
         SoundPad(name: "Kick", fileURL: URL(fileURLWithPath: ""), isDefault: true),
@@ -102,10 +148,17 @@ struct TimelineSoundItem: View {
         SoundPad(name: "HiHat", fileURL: URL(fileURLWithPath: ""), isDefault: false)
     ]
     
+    let sampleDelays = [
+        DelayItem(duration: 0.5),
+        DelayItem(duration: 1.0)
+    ]
+    
+    let timelineItems: [Any] = [sampleSounds[0], sampleDelays[0], sampleSounds[1], sampleDelays[1]]
+    
     SoundTimeline(
-        selectedSounds: sampleSounds,
+        timelineItems: timelineItems,
         onSoundTap: { sound in print("Timeline sound tapped: \(sound.name)") },
-        onRemoveSound: { index in print("Remove sound at index: \(index)") }
+        onRemoveItem: { index in print("Remove item at index: \(index)") }
     )
     .background(Color.black)
 } 

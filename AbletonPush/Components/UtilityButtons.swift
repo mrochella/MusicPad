@@ -12,6 +12,7 @@ struct UtilityButtons: View {
     let onReset: () -> Void
     let onPlayPause: () -> Void
     let onEdit: () -> Void
+    let onDelay: () -> Void
     
     // State parameters for dynamic UI
     let isLoopEnabled: Bool
@@ -34,6 +35,7 @@ struct UtilityButtons: View {
                 action: onPlayPause
             )
             UtilityButton(title: "Edit", icon: "pencil", action: onEdit)
+            UtilityButton(title: "Delay", icon: "clock", action: onDelay)
         }
         .padding()
     }
@@ -87,6 +89,7 @@ struct UtilityButton: View {
             onReset: { print("Reset tapped") },
             onPlayPause: { print("Play tapped") },
             onEdit: { print("Edit tapped") },
+            onDelay: { print("Delay tapped") },
             isLoopEnabled: true,
             isPlaying: false,
             isTimelineEmpty: false

@@ -12,7 +12,7 @@ import UniformTypeIdentifiers
 @MainActor
 class PadsViewModel: ObservableObject {
     @Published var pads: [SoundPad] = []
-    @Published var selectedSounds: [SoundPad] = []
+    @Published var timelineItems: [Any] = []
     @Published var showingFileImporter = false
     @Published var replacingPadIndex: Int?
     @Published var showingAlert = false
@@ -25,6 +25,7 @@ class PadsViewModel: ObservableObject {
     @Published var editingPadIndex: Int? = nil
     @Published var showingPadOptions = false
     @Published var selectedPadIndexForEdit: Int? = nil
+    @Published var showingDelayInput = false
     
     private var audioPlayers: [UUID: AVAudioPlayer] = [:]
     private let recorder = AudioRecorder()
@@ -83,17 +84,23 @@ class PadsViewModel: ObservableObject {
     // MARK: - Timeline Management
     
     func addSoundToTimeline(_ sound: SoundPad) {
-        selectedSounds.append(sound)
+        timelineItems.append(sound)
     }
     
     func removeSoundFromTimeline(at index: Int) {
-        if selectedSounds.indices.contains(index) {
-            selectedSounds.remove(at: index)
+        if timelineItems.indices.contains(index) {
+            timelineItems.remove(at: index)
+        }
+    }
+    
+    func removeItemFromTimeline(at index: Int) {
+        if timelineItems.indices.contains(index) {
+            timelineItems.remove(at: index)
         }
     }
     
     func clearTimeline() {
-        selectedSounds.removeAll()
+        timelineItems.removeAll()
     }
     
     func playSoundFromTimeline(_ sound: SoundPad) {
@@ -137,6 +144,23 @@ class PadsViewModel: ObservableObject {
         audioPlayers.removeAll()
     }
     
+    // MARK: - Delay Management
+    
+    func addDelayToTimeline(duration: Double) {
+        let delayItem = DelayItem(duration: duration)
+        timelineItems.append(delayItem)
+    }
+    
+    func removeDelayFromTimeline(at index: Int) {
+        if timelineItems.indices.contains(index) {
+            timelineItems.remove(at: index)
+        }
+    }
+    
+    func showDelayInput() {
+        showingDelayInput = true
+    }
+    
     // MARK: - Pad Management
     
     func startRecording(for index: Int) {
@@ -166,6 +190,14 @@ class PadsViewModel: ObservableObject {
         pads.remove(at: index)
         selectedPadIndexForEdit = nil  // ✅ clear selection after removing
         saveCustomPads()
+
+        // Hapus semua instance sound ini dari timeline
+        timelineItems.removeAll { item in
+            if let sound = item as? SoundPad {
+                return sound.id == pad.id
+            }
+            return false
+        }
     }
     
     func handleRecordingCompletion(fileURL: URL?) {

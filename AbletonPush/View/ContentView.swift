@@ -25,24 +25,25 @@ struct ContentView: View {
                 
                 // Timeline(horizontal) sound yang dipilih/diclick user
                 SoundTimeline(
-                    selectedSounds: viewModel.selectedSounds,
+                    timelineItems: viewModel.timelineItems,
                     onSoundTap: { (sound: SoundPad) in
                         viewModel.playSoundFromTimeline(sound)
                     },
-                    onRemoveSound: { (index: Int) in 
-                        viewModel.removeSoundFromTimeline(at: index)
+                    onRemoveItem: { (index: Int) in 
+                        viewModel.removeItemFromTimeline(at: index)
                     }
                 )
                 
-                // UtilityButtons ( Loop, Reset, Play, Edit )
+                // UtilityButtons ( Loop, Reset, Play, Edit, Delay )
                 UtilityButtons(
                     onLoop: { utilityViewModel.handleLoop() },
                     onReset: { utilityViewModel.handleReset() },
                     onPlayPause: { utilityViewModel.handlePlayPause() },
                     onEdit: { utilityViewModel.handleEdit() },
+                    onDelay: { utilityViewModel.handleDelay() },
                     isLoopEnabled: utilityViewModel.isLoopEnabled,
                     isPlaying: utilityViewModel.isPlaying,
-                    isTimelineEmpty: viewModel.selectedSounds.isEmpty
+                    isTimelineEmpty: viewModel.timelineItems.isEmpty
                 )
 
                 // Sound Padfor:
@@ -71,8 +72,8 @@ struct ContentView: View {
             .onAppear {
                 utilityViewModel.setPadsViewModel(viewModel)
             }
-            .onChange(of: viewModel.selectedSounds.count) { count in
-                print("🔄 ViewModel selectedSounds count changed to: \(count)")
+            .onChange(of: viewModel.timelineItems.count) { count in
+                print("ViewModel timelineItems count changed to: \(count)")
                 utilityViewModel.updateTimelineEmptyState(count == 0)
             }
             .fileImporter(
@@ -85,6 +86,13 @@ struct ContentView: View {
             .sheet(isPresented: $viewModel.showingRecorderSheet) {
                 RecordingSheet(recorder: viewModel.recorderInstance) { fileURL in
                     viewModel.handleRecordingCompletion(fileURL: fileURL)
+                }
+            }
+            .sheet(isPresented: $viewModel.showingDelayInput) {
+                DelayInputModal(
+                    isPresented: $viewModel.showingDelayInput
+                ) { duration in
+                    viewModel.addDelayToTimeline(duration: duration)
                 }
             }
             .alert("Error", isPresented: $viewModel.showingAlert) {

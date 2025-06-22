@@ -36,8 +36,8 @@ class UtilityButtonsViewModel: ObservableObject {
         isLoopEnabled.toggle()
         
         if isLoopEnabled && !isPlaying{
-            // Mulai play timeline jika ada sound di timeline
-            if let padsVM = padsViewModel, !padsVM.selectedSounds.isEmpty {
+            // Mulai play timeline jika ada item di timeline
+            if let padsVM = padsViewModel, !padsVM.timelineItems.isEmpty {
                 isPlaying = true
                 playAllTimelineSounds()
             }
@@ -78,6 +78,12 @@ class UtilityButtonsViewModel: ObservableObject {
     func handleEdit() {
         guard let padsVM = padsViewModel else { return }
         padsVM.isEditMode.toggle()
+    }
+    
+    // MARK: - Delay Button Handler
+    func handleDelay() {
+        guard let padsVM = padsViewModel else { return }
+        padsVM.showDelayInput()
     }
     
     // MARK: - Audio Management
@@ -125,38 +131,56 @@ class UtilityButtonsViewModel: ObservableObject {
             return
         }
         
-        let timelineSounds = padsVM.selectedSounds
+        let timelineItems = padsVM.timelineItems
         
-        if timelineSounds.isEmpty {
-            print("No sounds in timeline to play")
+        if timelineItems.isEmpty {
+            print("No items in timeline to play")
             isPlaying = false
             return
         }
         
+        // Calculate total duration of timeline
+        var totalDuration: Double = 0
+        for item in timelineItems {
+            if let sound = item as? SoundPad {
+                totalDuration += 0.25 // Default delay between sounds
+            } else if let delay = item as? DelayItem {
+                totalDuration += delay.duration
+            }
+        }
+        
         // play sound with delay
-        for (index, sound) in timelineSounds.enumerated() {
-            DispatchQueue.main.asyncAfter(deadline: .now() + Double(index) * 0.25) {
-                if self.isPlaying { // Check if still playing
-                    padsVM.playSoundFromTimeline(sound)
-                    
-                    // If this is the last sound and loop is enabled, restart
-                    if index == timelineSounds.count - 1 && self.isLoopEnabled {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                            if self.isPlaying && self.isLoopEnabled {
-                                self.playAllTimelineSounds()
-                            } else {
-                                print("🛑 Loop stopped - isPlaying: \(self.isPlaying), isLoopEnabled: \(self.isLoopEnabled)")
-                            }
-                        }
-                    } else if index == timelineSounds.count - 1 && !self.isLoopEnabled {
-                        // If not looping, stop after last sound
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            if !self.isLoopEnabled {
-                                print("🛑 Playback finished - loop disabled")
-                                self.isPlaying = false
-                            }
-                        }
+        var currentDelay: Double = 0
+        
+        for (index, item) in timelineItems.enumerated() {
+            if let sound = item as? SoundPad {
+                DispatchQueue.main.asyncAfter(deadline: .now() + currentDelay) {
+                    if self.isPlaying { // Check if still playing
+                        padsVM.playSoundFromTimeline(sound)
                     }
+                }
+                currentDelay += 0.25 // Default delay between sounds
+            } else if let delay = item as? DelayItem {
+                currentDelay += delay.duration
+            }
+        }
+        
+        // Handle loop after total duration
+        if isLoopEnabled {
+            DispatchQueue.main.asyncAfter(deadline: .now() + totalDuration) {
+                if self.isPlaying && self.isLoopEnabled {
+                    print("🔄 Restarting loop after total duration: \(totalDuration)")
+                    self.playAllTimelineSounds()
+                } else {
+                    print("🛑 Loop stopped - isPlaying: \(self.isPlaying), isLoopEnabled: \(self.isLoopEnabled)")
+                }
+            }
+        } else {
+            // If not looping, stop after total duration
+            DispatchQueue.main.asyncAfter(deadline: .now() + totalDuration) {
+                if !self.isLoopEnabled {
+                    print("🛑 Playback finished - loop disabled")
+                    self.isPlaying = false
                 }
             }
         }

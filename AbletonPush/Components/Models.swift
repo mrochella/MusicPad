@@ -18,6 +18,15 @@ struct SoundPad: Identifiable, Equatable {
     }
 }
 
+struct DelayItem: Identifiable, Equatable {
+    let id = UUID()
+    var duration: Double // in seconds
+    
+    static func == (lhs: DelayItem, rhs: DelayItem) -> Bool {
+        return lhs.id == rhs.id
+    }
+}
+
 struct PadInfo: Codable {
     let name: String
     let path: String
