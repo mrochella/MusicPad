@@ -99,6 +99,15 @@ class PadsViewModel: ObservableObject {
         }
     }
     
+    func moveItemInTimeline(from fromIndex: Int, to toIndex: Int) {
+        guard fromIndex != toIndex,
+              timelineItems.indices.contains(fromIndex),
+              timelineItems.indices.contains(toIndex) else { return }
+        
+        let item = timelineItems.remove(at: fromIndex)
+        timelineItems.insert(item, at: toIndex)
+    }
+    
     func clearTimeline() {
         timelineItems.removeAll()
     }

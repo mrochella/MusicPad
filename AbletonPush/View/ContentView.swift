@@ -31,7 +31,11 @@ struct ContentView: View {
                     },
                     onRemoveItem: { (index: Int) in 
                         viewModel.removeItemFromTimeline(at: index)
-                    }
+                    },
+                    onMoveItem: { (fromIndex: Int, toIndex: Int) in
+                        viewModel.moveItemInTimeline(from: fromIndex, to: toIndex)
+                    },
+                    isEditMode: viewModel.isEditMode
                 )
                 
                 // UtilityButtons ( Loop, Reset, Play, Edit, Delay )
@@ -45,6 +49,7 @@ struct ContentView: View {
                     isPlaying: utilityViewModel.isPlaying,
                     isTimelineEmpty: viewModel.timelineItems.isEmpty
                 )
+                .padding(.vertical)
 
                 // Sound Padfor:
                 PadsGridView(

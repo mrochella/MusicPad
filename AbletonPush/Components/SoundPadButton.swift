@@ -12,16 +12,10 @@ struct SoundPadButton: View {
     let pad: SoundPad
     let index: Int
     let onTap: () -> Void
-    let onReplace: () -> Void
-    let onRemove: (() -> Void)?
-    let onRecord: (() -> Void)?
 
     var body: some View {
         Button(action: onTap) {
             padContent
-        }
-        .contextMenu {
-            contextMenuContent
         }
     }
 
@@ -64,23 +58,6 @@ struct SoundPadButton: View {
             )
         }
     }
-
-    @ViewBuilder
-    private var contextMenuContent: some View {
-        Button("Replace Sound", systemImage: "arrow.triangle.2.circlepath") {
-            onReplace()
-        }
-
-        Button("Record Sound", systemImage: "mic") {
-            onRecord?()
-        }
-
-        if let onRemove = onRemove {
-            Button("Remove", systemImage: "trash", role: .destructive) {
-                onRemove()
-            }
-        }
-    }
 }
 
 #Preview {
@@ -89,10 +66,7 @@ struct SoundPadButton: View {
     SoundPadButton(
         pad: samplePad,
         index: 0,
-        onTap: { print("Pad tapped") },
-        onReplace: { print("Replace tapped") },
-        onRemove: { print("Remove tapped") },
-        onRecord: { print("Record tapped") }
+        onTap: { print("Pad tapped") }
     )
     .frame(width: 100, height: 100)
     .background(Color.black)

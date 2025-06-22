@@ -26,10 +26,7 @@ struct PadsGridView: View {
                         SoundPadButton(
                             pad: pad,
                             index: index,
-                            onTap: { onPadTap(pad) },
-                            onReplace: { onPadReplace(index) },
-                            onRemove: pad.isDefault ? nil : { onPadRemove(index) },
-                            onRecord: { onPadRecord(index) }
+                            onTap: { onPadTap(pad) }
                         )
 
                         if isEditMode {
