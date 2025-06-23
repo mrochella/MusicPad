@@ -33,7 +33,6 @@ struct DelayInputModal: View {
                         .foregroundColor(.white)
                     
                     TextField("0.5", text: $delayDuration)
-                        .keyboardType(.decimalPad)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .foregroundColor(.black)
                 }
