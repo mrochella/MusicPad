@@ -63,8 +63,11 @@ class UtilityButtonsViewModel: ObservableObject {
         isPlaying = false
     }
     
-    // Play Pause button
     func handlePlayPause() {
+        if isTimelineEmpty {
+            return
+        }
+
         isPlaying.toggle()
         
         if isPlaying {

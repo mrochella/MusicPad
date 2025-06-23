@@ -32,7 +32,8 @@ struct UtilityButtons: View {
             UtilityButton(
                 title: isPlaying ? "Pause" : "Play", 
                 icon: isPlaying ? "pause" : "play", 
-                action: onPlayPause
+                action: onPlayPause,
+                isTimelineEmpty: isTimelineEmpty
             )
             UtilityButton(title: "Edit", icon: "pencil", action: onEdit)
             UtilityButton(title: "Delay", icon: "clock", action: onDelay)
