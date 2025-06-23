@@ -13,6 +13,8 @@ struct SoundTimeline: View {
     let onRemoveItem: (Int) -> Void
     let onMoveItem: (Int, Int) -> Void
     let isEditMode: Bool
+    
+    
 
     @State private var draggedIndex: Int?
 
@@ -22,13 +24,13 @@ struct SoundTimeline: View {
                 Text("Timeline")
                     .font(.headline)
                     .fontWeight(.semibold)
-                    .foregroundColor(.white)
+                    .foregroundColor(.black.opacity(0.8))
 
                 Spacer()
 
                 Text("Drag to reorder")
                     .font(.caption)
-                    .foregroundColor(.white)
+                    .foregroundColor(.black.opacity(0.8))
             }
             .padding()
             .background(Color.clear) // ✅ make header background clear
@@ -91,22 +93,32 @@ struct SoundTimeline: View {
                             ))
                         }
                     }
-
+                    
                     if timelineItems.isEmpty {
-                        Text("No items in timeline")
-                            .font(.caption)
-                            .foregroundColor(.gray)
-                            .frame(maxWidth: .infinity)
-                            .padding()
+                        VStack(spacing: 6) {
+                            Image(systemName: "square.dashed")
+                                .font(.title)
+                                .foregroundColor(.black.opacity(0.5))
+
+                            Text("No items")
+                                .font(.caption)
+                                .foregroundColor(.black.opacity(0.5))
+                        }
+                        .frame(width: 800, height: 180)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color.black.opacity(0.5), lineWidth: 2)
+                                .background(Color.clear)
+                        )
                     }
                 }
                 .padding(.horizontal)
-                .background(Color.clear) // ✅ make inner HStack clear
+                .background(Color.clear)
             }
-            .background(Color.clear) // ✅ make scrollview clear
+            .background(Color.clear)
         }
         .frame(height: 300)
-        .background(Color.clear) // ✅ make outer VStack clear
+        .background(Color.clear)
     }
 }
 

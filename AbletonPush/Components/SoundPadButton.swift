@@ -15,59 +15,64 @@ struct SoundPadButton: View {
 
     var body: some View {
         Button(action: onTap) {
-            padContent
-        }
-    }
+            VStack(spacing: 6) {
+                Text(pad.name.uppercased())
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.white)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
 
-    private var padContent: some View {
-        VStack(spacing: 4) {
-            Text(pad.name.uppercased())
-                .font(.caption)
-                .fontWeight(.semibold)
-                .foregroundColor(.white)
-                .lineLimit(2)
-                .multilineTextAlignment(.center)
-
-            Text("\(index + 1)")
-                .font(.caption2)
-                .foregroundColor(.white.opacity(0.7))
-        }
-        .frame(height: 80)
-        .frame(maxWidth: .infinity)
-        .background(padBackground)
-    }
-
-    private var padBackground: some View {
-        RoundedRectangle(cornerRadius: 8)
-            .fill(backgroundGradient)
-            .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 2)
-    }
-
-    private var backgroundGradient: LinearGradient {
-        if pad.isDefault {
-            return LinearGradient(
-                colors: [Color.blue.opacity(0.8), Color.blue.opacity(0.6)],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-        } else {
-            return LinearGradient(
-                colors: [Color.green.opacity(0.8), Color.green.opacity(0.6)],
-                startPoint: .top,
-                endPoint: .bottom
+                Text("#\(index + 1)")
+                    .font(.caption2)
+                    .foregroundColor(.white.opacity(0.7))
+            }
+            .padding()
+            .frame(maxWidth: .infinity, minHeight: 80)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.black.opacity(0.3))
+                
             )
         }
+        .buttonStyle(OuterGlowStyle(glowColor: .yellow))
     }
 }
 
+// MARK: - Outer Glow Button Style
+struct OuterGlowStyle: ButtonStyle {
+    var glowColor: Color
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(glowColor.opacity(configuration.isPressed ? 1 : 0), lineWidth: 2)
+                    .shadow(color: glowColor.opacity(configuration.isPressed ? 0.8 : 0), radius: 10)
+            )
+            .scaleEffect(configuration.isPressed ? 1.02 : 1.0)
+            .animation(.easeOut(duration: 0.2), value: configuration.isPressed)
+    }
+}
+
+// MARK: - Preview
 #Preview {
     let samplePad = SoundPad(name: "Kick", fileURL: URL(fileURLWithPath: ""), isDefault: true)
-    
-    SoundPadButton(
-        pad: samplePad,
-        index: 0,
-        onTap: { print("Pad tapped") }
-    )
-    .frame(width: 100, height: 100)
-    .background(Color.clear)
+
+    return ZStack {
+        LinearGradient(
+            gradient: Gradient(colors: [Color.blue.opacity(0.9), Color.black]),
+            startPoint: .top,
+            endPoint: .bottom
+        )
+        .ignoresSafeArea()
+
+        SoundPadButton(
+            pad: samplePad,
+            index: 0,
+            onTap: { print("Pad tapped") }
+        )
+        .frame(width: 100, height: 100)
+        .padding()
+    }
 }

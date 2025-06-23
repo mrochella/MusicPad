@@ -72,12 +72,29 @@ struct UtilityButton: View {
             .frame(height: 80)
             .frame(maxWidth: .infinity)
             .background(
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(isTimelineEmpty == true ? Color.gray.opacity(0.3) : Color.yellow)
-                    .shadow(
-                        color: isTimelineEmpty == true ? .clear : Color.yellow.opacity(0.6),
-                        radius: 8, x: 0, y: 0
-                    )
+//                RoundedRectangle(cornerRadius: 8)
+//                    .fill(isTimelineEmpty == true ? Color.gray.opacity(0.3) : Color.blue)
+//                    .shadow(
+//                        color: isTimelineEmpty == true ? .clear : Color.yellow.opacity(0.6),
+//                        radius: 8, x: 0, y: 0
+//                    )
+                ZStack {
+                    if isTimelineEmpty == true {
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.gray.opacity(0.3))
+                    } else {
+                        Image("silver1")
+                            .resizable()
+                            .scaledToFill()
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .clipped()
+                            .cornerRadius(8)
+                    }
+                }
+                .shadow(
+                    color: isTimelineEmpty == true ? .clear : Color.yellow.opacity(0.6),
+                    radius: 8, x: 0, y: 0
+                )
             )
             .cornerRadius(8)
             .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 2)

@@ -16,16 +16,16 @@ struct AddPadButton: View {
             VStack {
                 Image(systemName: "plus")
                     .font(.title)
-                    .foregroundColor(.white.opacity(0.6))
+                    .foregroundColor(.black.opacity(0.5))
                 Text("ADD")
                     .font(.caption)
-                    .foregroundColor(.white.opacity(0.6))
+                    .foregroundColor(.black.opacity(0.5))
             }
             .frame(height: 80)
             .frame(maxWidth: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: 8)
-                    .stroke(Color.white.opacity(0.3), lineWidth: 2)
+                    .stroke(Color.black.opacity(0.5), lineWidth: 2)
                     .background(Color.clear)
             )
         }
@@ -38,4 +38,4 @@ struct AddPadButton: View {
     }
     .frame(width: 100, height: 100)
     .background(Color.black)
-} 
+}

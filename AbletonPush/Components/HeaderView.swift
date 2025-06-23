@@ -15,19 +15,11 @@ struct HeaderView: View {
         HStack {
             Text("BEATFORGE")
                 .font(.system(size: 48, weight: .heavy, design: .default))
-                .overlay(
-                    Image("textureMetal")
-                        .resizable()
-                        .scaledToFill()
-                        .clipped()
-                )
-                .mask(
-                    Text("BEATFORGE")
-                        .font(.system(size: 48, weight: .heavy, design: .default))
-                )
+                .foregroundColor(.white)
+                .shadow(radius: 4)
         }
         .padding()
-        .background(Color.clear) // ✅ Transparent background to let gradient show through
+        .background(Color.clear)
     }
 }
 

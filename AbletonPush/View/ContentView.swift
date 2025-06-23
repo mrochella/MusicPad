@@ -30,11 +30,17 @@ struct ContentView: View {
         NavigationView {
             ZStack {
                 LinearGradient(
-                    gradient: Gradient(colors: [Color.blue.opacity(0.9), Color.black]),
+                    gradient: Gradient(colors: [
+                        Color(hex: "#cceeff"),
+                        Color(hex: "#cce2ff"),
+                        Color.white
+                    ]),
                     startPoint: .top,
                     endPoint: .bottom
                 )
                 .ignoresSafeArea()
+                
+                
                 
                 VStack(spacing: 0) {
                     HeaderView {
@@ -174,4 +180,4 @@ struct ContentView: View {
 #Preview {
     ContentView()
         .modelContainer(for: SoundPadEntity.self)
-} 
+}
