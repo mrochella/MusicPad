@@ -24,7 +24,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		DB8C2E702E0092CE0076A640 /* AbletonPush.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AbletonPush.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DB8C2E702E0092CE0076A640 /* Beat Forge.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Beat Forge.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DB8C2E7D2E0092CF0076A640 /* AbletonPushTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AbletonPushTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DB8C2E872E0092CF0076A640 /* AbletonPushUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AbletonPushUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -85,7 +85,7 @@
 		DB8C2E712E0092CE0076A640 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				DB8C2E702E0092CE0076A640 /* AbletonPush.app */,
+				DB8C2E702E0092CE0076A640 /* Beat Forge.app */,
 				DB8C2E7D2E0092CF0076A640 /* AbletonPushTests.xctest */,
 				DB8C2E872E0092CF0076A640 /* AbletonPushUITests.xctest */,
 			);
@@ -114,7 +114,7 @@
 			packageProductDependencies = (
 			);
 			productName = AbletonPush;
-			productReference = DB8C2E702E0092CE0076A640 /* AbletonPush.app */;
+			productReference = DB8C2E702E0092CE0076A640 /* Beat Forge.app */;
 			productType = "com.apple.product-type.application";
 		};
 		DB8C2E7C2E0092CF0076A640 /* AbletonPushTests */ = {
@@ -412,7 +412,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = Apple.AbletonPush;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "Beat Forge";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -441,7 +441,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = Apple.AbletonPush;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "Beat Forge";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
