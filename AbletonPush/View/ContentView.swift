@@ -15,72 +15,78 @@ struct ContentView: View {
     @StateObject private var utilityViewModel = UtilityButtonsViewModel()
     
     private let columns = Array(repeating: GridItem(.flexible()), count: 4)
-    
+
     var body: some View {
         NavigationView {
-            VStack(spacing: 0) {
-                HeaderView {
-                    viewModel.showAddOptions = true
-                }
-                
-                // Timeline(horizontal) sound yang dipilih/diclick user
-                SoundTimeline(
-                    timelineItems: viewModel.timelineItems,
-                    onSoundTap: { (sound: SoundPad) in
-                        viewModel.playSoundFromTimeline(sound)
-                    },
-                    onRemoveItem: { (index: Int) in 
-                        viewModel.removeItemFromTimeline(at: index)
-                    },
-                    onMoveItem: { (fromIndex: Int, toIndex: Int) in
-                        viewModel.moveItemInTimeline(from: fromIndex, to: toIndex)
-                    },
-                    isEditMode: viewModel.isEditMode
+            ZStack {
+                LinearGradient(
+                    gradient: Gradient(colors: [Color.blue.opacity(0.9), Color.black]),
+                    startPoint: .top,
+                    endPoint: .bottom
                 )
+                .ignoresSafeArea()
                 
-                // UtilityButtons ( Loop, Reset, Play, Edit, Delay )
-                UtilityButtons(
-                    onLoop: { utilityViewModel.handleLoop() },
-                    onReset: { utilityViewModel.handleReset() },
-                    onPlayPause: { utilityViewModel.handlePlayPause() },
-                    onEdit: { utilityViewModel.handleEdit() },
-                    onDelay: { utilityViewModel.handleDelay() },
-                    isLoopEnabled: utilityViewModel.isLoopEnabled,
-                    isPlaying: utilityViewModel.isPlaying,
-                    isTimelineEmpty: viewModel.timelineItems.isEmpty
-                )
-                .padding(.vertical)
+                VStack(spacing: 0) {
+                    HeaderView {
+                        viewModel.showAddOptions = true
+                    }
 
-                // Sound Padfor:
-                PadsGridView(
-                    pads: viewModel.pads,
-                    columns: columns,
-                    onPadTap: { pad in
-                        if viewModel.isEditMode {
-                            if let index = viewModel.pads.firstIndex(where: { $0.id == pad.id }) {
-                                viewModel.selectedPadIndexForEdit = index
-                                viewModel.showingPadOptions = true
+                    SoundTimeline(
+                        timelineItems: viewModel.timelineItems,
+                        onSoundTap: { sound in
+                            viewModel.playSoundFromTimeline(sound)
+                        },
+                        onRemoveItem: { index in
+                            viewModel.removeItemFromTimeline(at: index)
+                        },
+                        onMoveItem: { fromIndex, toIndex in
+                            viewModel.moveItemInTimeline(from: fromIndex, to: toIndex)
+                        },
+                        isEditMode: viewModel.isEditMode
+                    )
+
+                    UtilityButtons(
+                        onLoop: { utilityViewModel.handleLoop() },
+                        onReset: { utilityViewModel.handleReset() },
+                        onPlayPause: { utilityViewModel.handlePlayPause() },
+                        onEdit: { utilityViewModel.handleEdit() },
+                        onDelay: { utilityViewModel.handleDelay() },
+                        isLoopEnabled: utilityViewModel.isLoopEnabled,
+                        isPlaying: utilityViewModel.isPlaying,
+                        isTimelineEmpty: viewModel.timelineItems.isEmpty
+                    )
+                    .padding(.vertical)
+
+                    PadsGridView(
+                        pads: viewModel.pads,
+                        columns: columns,
+                        onPadTap: { pad in
+                            if viewModel.isEditMode {
+                                if let index = viewModel.pads.firstIndex(where: { $0.id == pad.id }) {
+                                    viewModel.selectedPadIndexForEdit = index
+                                    viewModel.showingPadOptions = true
+                                }
+                            } else {
+                                viewModel.playSound(for: pad)
                             }
-                        } else {
-                            viewModel.playSound(for: pad)
-                        }
-                    },
-                    onPadReplace: viewModel.handlePadReplace,
-                    onPadRemove: viewModel.removePad,
-                    onPadRecord: viewModel.startRecording,
-                    onAddPad: viewModel.handleAddPad,
-                    isEditMode: viewModel.isEditMode
-                )
+                        },
+                        onPadReplace: viewModel.handlePadReplace,
+                        onPadRemove: viewModel.removePad,
+                        onPadRecord: viewModel.startRecording,
+                        onAddPad: viewModel.handleAddPad,
+                        isEditMode: viewModel.isEditMode
+                    )
+                }
+                .background(Color.clear)
+                .onAppear {
+                    utilityViewModel.setPadsViewModel(viewModel)
+                }
+                .onChange(of: viewModel.timelineItems.count) { count in
+                    print("ViewModel timelineItems count changed to: \(count)")
+                    utilityViewModel.updateTimelineEmptyState(count == 0)
+                }
             }
-            .background(Color.black)
             .navigationBarHidden(true)
-            .onAppear {
-                utilityViewModel.setPadsViewModel(viewModel)
-            }
-            .onChange(of: viewModel.timelineItems.count) { count in
-                print("ViewModel timelineItems count changed to: \(count)")
-                utilityViewModel.updateTimelineEmptyState(count == 0)
-            }
             .fileImporter(
                 isPresented: $viewModel.showingFileImporter,
                 allowedContentTypes: [.wav, .mp3, .aiff],
@@ -105,7 +111,6 @@ struct ContentView: View {
             } message: {
                 Text(viewModel.alertMessage)
             }
-
             .confirmationDialog("Add New Sound", isPresented: $viewModel.showAddOptions, titleVisibility: .visible) {
                 Button("Import File") {
                     viewModel.showingFileImporter = true
@@ -116,7 +121,6 @@ struct ContentView: View {
                 }
                 Button("Cancel", role: .cancel) {}
             }
-
             .confirmationDialog("Edit Pad", isPresented: $viewModel.showingPadOptions, titleVisibility: .visible) {
                 Button("Replace") {
                     if let index = viewModel.selectedPadIndexForEdit {
@@ -132,6 +136,7 @@ struct ContentView: View {
                 Button("Cancel", role: .cancel) {}
             }
         }
+        .navigationViewStyle(StackNavigationViewStyle())
         .alert("Name Your Sound", isPresented: $viewModel.isNamingNewPad) {
             TextField("Enter name", text: $viewModel.newPadName)
             Button("Save") {
@@ -145,10 +150,9 @@ struct ContentView: View {
         } message: {
             Text("Custom name will appear on the sound button.")
         }
-        .navigationViewStyle(StackNavigationViewStyle())
     }
 }
 
 #Preview {
     ContentView()
-} 
+}

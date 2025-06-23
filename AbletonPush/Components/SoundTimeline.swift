@@ -13,9 +13,9 @@ struct SoundTimeline: View {
     let onRemoveItem: (Int) -> Void
     let onMoveItem: (Int, Int) -> Void
     let isEditMode: Bool
-    
+
     @State private var draggedIndex: Int?
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
@@ -23,15 +23,16 @@ struct SoundTimeline: View {
                     .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(.white)
-                
+
                 Spacer()
-                
+
                 Text("Drag to reorder")
                     .font(.caption)
-                    .foregroundColor(.gray)
+                    .foregroundColor(.white)
             }
             .padding()
-            
+            .background(Color.clear) // ✅ make header background clear
+
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
                     ForEach(Array(timelineItems.enumerated()), id: \.offset) { index, item in
@@ -40,10 +41,10 @@ struct SoundTimeline: View {
                                 sound: sound,
                                 index: index,
                                 onTap: {
-                                    onSoundTap(sound) 
+                                    onSoundTap(sound)
                                 },
                                 onRemove: {
-                                    onRemoveItem(index) 
+                                    onRemoveItem(index)
                                 },
                                 isEditMode: isEditMode
                             )
@@ -58,8 +59,8 @@ struct SoundTimeline: View {
                                 return provider
                             }
                             .onDrop(of: [.text], delegate: DropViewDelegate(
-                                item: sound, 
-                                index: index, 
+                                item: sound,
+                                index: index,
                                 onMoveItem: onMoveItem,
                                 onDragEnd: { draggedIndex = nil }
                             ))
@@ -83,14 +84,14 @@ struct SoundTimeline: View {
                                 return provider
                             }
                             .onDrop(of: [.text], delegate: DropViewDelegate(
-                                item: delay, 
-                                index: index, 
+                                item: delay,
+                                index: index,
                                 onMoveItem: onMoveItem,
                                 onDragEnd: { draggedIndex = nil }
                             ))
                         }
                     }
-                    
+
                     if timelineItems.isEmpty {
                         Text("No items in timeline")
                             .font(.caption)
@@ -100,10 +101,12 @@ struct SoundTimeline: View {
                     }
                 }
                 .padding(.horizontal)
+                .background(Color.clear) // ✅ make inner HStack clear
             }
+            .background(Color.clear) // ✅ make scrollview clear
         }
-        .frame(height: 120)
-        .background(Color.black.opacity(0.8))
+        .frame(height: 300)
+        .background(Color.clear) // ✅ make outer VStack clear
     }
 }
 
@@ -112,10 +115,10 @@ struct DropViewDelegate: DropDelegate {
     let index: Int
     let onMoveItem: (Int, Int) -> Void
     let onDragEnd: () -> Void
-    
+
     func performDrop(info: DropInfo) -> Bool {
         guard let itemProvider = info.itemProviders(for: [.text]).first else { return false }
-        
+
         itemProvider.loadDataRepresentation(forTypeIdentifier: "public.text") { data, error in
             if let data = data,
                let string = String(data: data, encoding: .utf8),
@@ -130,11 +133,11 @@ struct DropViewDelegate: DropDelegate {
         }
         return true
     }
-    
+
     func dropEntered(info: DropInfo) {
         // Optional: Add visual feedback when dragging over
     }
-    
+
     func dropExited(info: DropInfo) {
         // Optional: Remove visual feedback when dragging away
     }
@@ -146,7 +149,7 @@ struct TimelineSoundItem: View {
     let onTap: () -> Void
     let onRemove: () -> Void
     let isEditMode: Bool
-    
+
     var body: some View {
         ZStack(alignment: .topTrailing) {
             Button(action: {
@@ -156,17 +159,17 @@ struct TimelineSoundItem: View {
                     Image(systemName: "waveform")
                         .font(.system(size: 24, weight: .medium))
                         .foregroundColor(.white)
-                    
+
                     Text(sound.name)
                         .font(.caption)
                         .fontWeight(.medium)
                         .foregroundColor(.white)
                         .lineLimit(1)
                 }
-                .frame(width: 80, height: 80)
+                .frame(width: 80, height: 180)
                 .background(
                     RoundedRectangle(cornerRadius: 8)
-                        .fill(sound.isDefault ? 
+                        .fill(sound.isDefault ?
                               LinearGradient(colors: [.blue.opacity(0.8), .blue.opacity(0.6)], startPoint: .top, endPoint: .bottom) :
                               LinearGradient(colors: [.green.opacity(0.8), .green.opacity(0.6)], startPoint: .top, endPoint: .bottom)
                         )
@@ -174,7 +177,7 @@ struct TimelineSoundItem: View {
                 .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 2)
             }
             .buttonStyle(PlainButtonStyle())
-            
+
             if isEditMode {
                 Button(action: onRemove) {
                     Image(systemName: "xmark.circle.fill")
@@ -194,28 +197,28 @@ struct TimelineDelayItem: View {
     let index: Int
     let onRemove: () -> Void
     let isEditMode: Bool
-    
+
     var body: some View {
         ZStack(alignment: .topTrailing) {
             VStack(spacing: 4) {
                 Image(systemName: "clock")
                     .font(.system(size: 24, weight: .medium))
                     .foregroundColor(.white)
-                
+
                 Text("\(String(format: "%.1f", delay.duration))s")
                     .font(.caption)
                     .fontWeight(.medium)
                     .foregroundColor(.white)
                     .lineLimit(1)
             }
-            .frame(width: 80, height: 80)
+            .frame(width: 80, height: 180)
             .background(
                 RoundedRectangle(cornerRadius: 8)
                     .fill(LinearGradient(colors: [.orange.opacity(0.8), .orange.opacity(0.6)], startPoint: .top, endPoint: .bottom)
                     )
             )
             .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 2)
-            
+
             if isEditMode {
                 Button(action: onRemove) {
                     Image(systemName: "xmark.circle.fill")
@@ -236,20 +239,28 @@ struct TimelineDelayItem: View {
         SoundPad(name: "Snare", fileURL: URL(fileURLWithPath: ""), isDefault: true),
         SoundPad(name: "HiHat", fileURL: URL(fileURLWithPath: ""), isDefault: false)
     ]
-    
+
     let sampleDelays = [
         DelayItem(duration: 0.5),
         DelayItem(duration: 1.0)
     ]
-    
+
     let timelineItems: [Any] = [sampleSounds[0], sampleDelays[0], sampleSounds[1], sampleDelays[1]]
-    
-    SoundTimeline(
-        timelineItems: timelineItems,
-        onSoundTap: { sound in print("Timeline sound tapped: \(sound.name)") },
-        onRemoveItem: { index in print("Remove item at index: \(index)") },
-        onMoveItem: { fromIndex, toIndex in print("Move item from \(fromIndex) to \(toIndex)") },
-        isEditMode: true
-    )
-    .background(Color.black)
-} 
+
+    return ZStack {
+        LinearGradient(
+            gradient: Gradient(colors: [Color.blue.opacity(0.9), Color.black]),
+            startPoint: .top,
+            endPoint: .bottom
+        )
+        .ignoresSafeArea()
+
+        SoundTimeline(
+            timelineItems: timelineItems,
+            onSoundTap: { sound in print("Timeline sound tapped: \(sound.name)") },
+            onRemoveItem: { index in print("Remove item at index: \(index)") },
+            onMoveItem: { fromIndex, toIndex in print("Move item from \(fromIndex) to \(toIndex)") },
+            isEditMode: true
+        )
+    }
+}

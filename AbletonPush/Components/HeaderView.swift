@@ -13,23 +13,35 @@ struct HeaderView: View {
 
     var body: some View {
         HStack {
-            Text("SOUNDS PAD")
-                .font(.title)
-                .fontWeight(.bold)
-                .foregroundColor(.white)
-            Spacer()
-            Button("Add Sounds") {
-                onAddSounds()
-            }
-            .foregroundColor(.orange)
+            Text("BEATFORGE")
+                .font(.system(size: 48, weight: .heavy, design: .default))
+                .overlay(
+                    Image("textureMetal")
+                        .resizable()
+                        .scaledToFill()
+                        .clipped()
+                )
+                .mask(
+                    Text("BEATFORGE")
+                        .font(.system(size: 48, weight: .heavy, design: .default))
+                )
         }
         .padding()
-        .background(Color.black)
+        .background(Color.clear) // ✅ Transparent background to let gradient show through
     }
 }
 
 #Preview {
-    HeaderView {
-        print("Add Sounds tapped")
+    ZStack {
+        LinearGradient(
+            gradient: Gradient(colors: [Color.blue.opacity(0.9), Color.black]),
+            startPoint: .top,
+            endPoint: .bottom
+        )
+        .ignoresSafeArea()
+
+        HeaderView {
+            print("Add Sounds tapped")
+        }
     }
-} 
+}

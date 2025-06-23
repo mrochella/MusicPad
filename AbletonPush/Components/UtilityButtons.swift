@@ -13,25 +13,25 @@ struct UtilityButtons: View {
     let onPlayPause: () -> Void
     let onEdit: () -> Void
     let onDelay: () -> Void
-    
+
     // State parameters for dynamic UI
     let isLoopEnabled: Bool
     let isPlaying: Bool
     let isTimelineEmpty: Bool
-    
+
     var body: some View {
         HStack(spacing: 12) {
             UtilityButton(
-                title: "Loop", 
-                icon: isLoopEnabled ? "repeat.circle.fill" : "repeat", 
+                title: "Loop",
+                icon: isLoopEnabled ? "repeat.circle.fill" : "repeat",
                 action: onLoop,
                 isActive: isLoopEnabled,
                 isTimelineEmpty: isTimelineEmpty
             )
             UtilityButton(title: "Reset", icon: "arrow.clockwise", action: onReset)
             UtilityButton(
-                title: isPlaying ? "Pause" : "Play", 
-                icon: isPlaying ? "pause" : "play", 
+                title: isPlaying ? "Pause" : "Play",
+                icon: isPlaying ? "pause" : "play",
                 action: onPlayPause,
                 isTimelineEmpty: isTimelineEmpty
             )
@@ -39,6 +39,7 @@ struct UtilityButtons: View {
             UtilityButton(title: "Delay", icon: "clock", action: onDelay)
         }
         .padding()
+        .background(Color.clear) // ✅ allow gradient to pass through
     }
 }
 
@@ -48,7 +49,7 @@ struct UtilityButton: View {
     let action: () -> Void
     let isActive: Bool?
     let isTimelineEmpty: Bool?
-    
+
     init(title: String, icon: String, action: @escaping () -> Void, isActive: Bool? = nil, isTimelineEmpty: Bool? = nil) {
         self.title = title
         self.icon = icon
@@ -56,24 +57,27 @@ struct UtilityButton: View {
         self.isActive = isActive
         self.isTimelineEmpty = isTimelineEmpty
     }
-    
+
     var body: some View {
         Button(action: action) {
             VStack(spacing: 4) {
                 Image(systemName: icon)
                     .font(.system(size: 20, weight: .medium))
-                    .foregroundColor(isTimelineEmpty == true ? .gray : (isActive == true ? .black : .black))
-                
+                    .foregroundColor(isTimelineEmpty == true ? .gray : .black)
+
                 Text(title)
                     .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(isTimelineEmpty == true ? .gray : (isActive == true ? .black : .black))
+                    .foregroundColor(isTimelineEmpty == true ? .gray : .black)
             }
             .frame(height: 80)
             .frame(maxWidth: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(isTimelineEmpty == true ? Color.gray.opacity(0.3) : Color(red: 1.0, green: 1.0, blue: 0.0))
-                    .shadow(color: isTimelineEmpty == true ? Color.clear : Color(red: 1.0, green: 1.0, blue: 0.0).opacity(0.6), radius: 8, x: 0, y: 0)
+                    .fill(isTimelineEmpty == true ? Color.gray.opacity(0.3) : Color.yellow)
+                    .shadow(
+                        color: isTimelineEmpty == true ? .clear : Color.yellow.opacity(0.6),
+                        radius: 8, x: 0, y: 0
+                    )
             )
             .cornerRadius(8)
             .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 2)
@@ -84,18 +88,26 @@ struct UtilityButton: View {
 }
 
 #Preview {
-    VStack {
-        UtilityButtons(
-            onLoop: { print("Loop tapped") },
-            onReset: { print("Reset tapped") },
-            onPlayPause: { print("Play tapped") },
-            onEdit: { print("Edit tapped") },
-            onDelay: { print("Delay tapped") },
-            isLoopEnabled: true,
-            isPlaying: false,
-            isTimelineEmpty: false
+    ZStack {
+        LinearGradient(
+            gradient: Gradient(colors: [Color.blue.opacity(0.9), Color.black]),
+            startPoint: .top,
+            endPoint: .bottom
         )
+        .ignoresSafeArea()
+
+        VStack {
+            UtilityButtons(
+                onLoop: { print("Loop tapped") },
+                onReset: { print("Reset tapped") },
+                onPlayPause: { print("Play tapped") },
+                onEdit: { print("Edit tapped") },
+                onDelay: { print("Delay tapped") },
+                isLoopEnabled: true,
+                isPlaying: false,
+                isTimelineEmpty: false
+            )
+        }
     }
-    .background(Color.black)
     .previewLayout(.sizeThatFits)
-} 
+}
