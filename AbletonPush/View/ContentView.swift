@@ -8,13 +8,23 @@
 import SwiftUI
 import AVFoundation
 import UniformTypeIdentifiers
+import SwiftData
 
 // MARK: - Main Content View
 struct ContentView: View {
-    @StateObject private var viewModel = PadsViewModel()
+    @Environment(\.modelContext) var modelContext
+    @StateObject private var viewModel: PadsViewModel
     @StateObject private var utilityViewModel = UtilityButtonsViewModel()
     
     private let columns = Array(repeating: GridItem(.flexible()), count: 4)
+    
+    init() {
+        // Create a temporary modelContext for initialization
+        let container = try! ModelContainer(for: SoundPadEntity.self)
+        let tempContext = ModelContext(container)
+        let tempViewModel = PadsViewModel(modelContext: tempContext)
+        _viewModel = StateObject(wrappedValue: tempViewModel)
+    }
     
     var body: some View {
         NavigationView {
@@ -75,6 +85,7 @@ struct ContentView: View {
             .background(Color.black)
             .navigationBarHidden(true)
             .onAppear {
+                // Update the viewModel with the correct modelContext if needed
                 utilityViewModel.setPadsViewModel(viewModel)
             }
             .onChange(of: viewModel.timelineItems.count) { count in
@@ -151,4 +162,5 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
+        .modelContainer(for: SoundPadEntity.self)
 } 

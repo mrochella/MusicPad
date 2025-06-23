@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct AbletonPushApp: App {
@@ -13,5 +14,6 @@ struct AbletonPushApp: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(for: SoundPadEntity.self)
     }
 }
