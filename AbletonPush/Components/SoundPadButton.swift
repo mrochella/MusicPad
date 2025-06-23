@@ -69,5 +69,5 @@ struct SoundPadButton: View {
         onTap: { print("Pad tapped") }
     )
     .frame(width: 100, height: 100)
-    .background(Color.black)
-} 
+    .background(Color.clear)
+}

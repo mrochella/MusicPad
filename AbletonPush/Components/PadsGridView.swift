@@ -16,7 +16,7 @@ struct PadsGridView: View {
     let onPadRemove: (Int) -> Void
     let onPadRecord: (Int) -> Void
     let onAddPad: () -> Void
-    let isEditMode: Bool  // New parameter
+    let isEditMode: Bool
 
     var body: some View {
         ScrollView {
@@ -46,7 +46,7 @@ struct PadsGridView: View {
             }
             .padding()
         }
-        .background(Color.black.opacity(0.9))
+        .background(Color.clear) // ✅ Transparent to allow parent background to show
     }
 }
 
@@ -56,17 +56,26 @@ struct PadsGridView: View {
         SoundPad(name: "Snare", fileURL: URL(fileURLWithPath: ""), isDefault: true),
         SoundPad(name: "HiHat", fileURL: URL(fileURLWithPath: ""), isDefault: true)
     ]
-    
+
     let columns = Array(repeating: GridItem(.flexible()), count: 4)
-    
-    PadsGridView(
-        pads: samplePads,
-        columns: columns,
-        onPadTap: { _ in print("Pad tapped") },
-        onPadReplace: { _ in print("Replace tapped") },
-        onPadRemove: { _ in print("Remove tapped") },
-        onPadRecord: { _ in print("Record tapped") },
-        onAddPad: { print("Add pad tapped") },
-        isEditMode: true // Preview edit mode ON
-    )
+
+    return ZStack {
+        LinearGradient(
+            gradient: Gradient(colors: [Color.blue.opacity(0.9), Color.black]),
+            startPoint: .top,
+            endPoint: .bottom
+        )
+        .ignoresSafeArea()
+
+        PadsGridView(
+            pads: samplePads,
+            columns: columns,
+            onPadTap: { _ in print("Pad tapped") },
+            onPadReplace: { _ in print("Replace tapped") },
+            onPadRemove: { _ in print("Remove tapped") },
+            onPadRecord: { _ in print("Record tapped") },
+            onAddPad: { print("Add pad tapped") },
+            isEditMode: true
+        )
+    }
 }
