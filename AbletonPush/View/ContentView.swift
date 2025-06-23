@@ -132,6 +132,19 @@ struct ContentView: View {
                 Button("Cancel", role: .cancel) {}
             }
         }
+        .alert("Name Your Sound", isPresented: $viewModel.isNamingNewPad) {
+            TextField("Enter name", text: $viewModel.newPadName)
+            Button("Save") {
+                viewModel.finalizePadNaming()
+            }
+            Button("Cancel", role: .cancel) {
+                viewModel.pendingPadURL = nil
+                viewModel.newPadName = ""
+                viewModel.isNamingNewPad = false
+            }
+        } message: {
+            Text("Custom name will appear on the sound button.")
+        }
         .navigationViewStyle(StackNavigationViewStyle())
     }
 }

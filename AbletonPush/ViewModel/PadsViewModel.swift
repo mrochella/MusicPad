@@ -26,6 +26,9 @@ class PadsViewModel: ObservableObject {
     @Published var showingPadOptions = false
     @Published var selectedPadIndexForEdit: Int? = nil
     @Published var showingDelayInput = false
+    @Published var pendingPadURL: URL? = nil
+    @Published var isNamingNewPad: Bool = false
+    @Published var newPadName: String = ""
     
     private var audioPlayers: [UUID: AVAudioPlayer] = [:]
     private let recorder = AudioRecorder()
@@ -210,20 +213,12 @@ class PadsViewModel: ObservableObject {
     }
     
     func handleRecordingCompletion(fileURL: URL?) {
-        if let fileURL = fileURL, let index = recordingPadIndex {
-            let padName = fileURL.deletingPathExtension().lastPathComponent
-            let newPad = SoundPad(name: padName, fileURL: fileURL, isDefault: false)
-            
-            if pads.indices.contains(index) {
-                // Replace existing pad
-                pads[index] = newPad
-            } else {
-                // Add new pad
-                pads.append(newPad)
-            }
-            
-            saveCustomPads()
+        if let fileURL = fileURL {
+            // Store the URL first
+            pendingPadURL = fileURL
+            isNamingNewPad = true
         }
+        
         showingRecorderSheet = false
     }
     
@@ -233,11 +228,43 @@ class PadsViewModel: ObservableObject {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
     
+    func finalizePadNaming() {
+        guard let url = pendingPadURL else { return }
+
+        let padName = newPadName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let finalName = padName.isEmpty ? url.deletingPathExtension().lastPathComponent : padName
+        let newPad = SoundPad(name: finalName, fileURL: url, isDefault: false)
+
+        if let index = editingPadIndex {
+            pads[index] = newPad
+            editingPadIndex = nil
+        } else if let index = replacingPadIndex {
+            pads[index] = newPad
+            replacingPadIndex = nil
+        } else if let index = recordingPadIndex {
+            if pads.indices.contains(index) {
+                pads[index] = newPad
+            } else {
+                pads.append(newPad)
+            }
+        } else {
+            pads.append(newPad)
+        }
+
+        recordingPadIndex = nil
+        selectedPadIndexForEdit = nil
+        pendingPadURL = nil
+        newPadName = ""
+        isNamingNewPad = false
+
+        saveCustomPads()
+    }
+    
     func handleFileImport(result: Result<[URL], Error>) {
         do {
-            guard let selectedFile = try result.get().first else { 
+            guard let selectedFile = try result.get().first else {
                 print("❌ No file selected")
-                return 
+                return
             }
 
             guard selectedFile.startAccessingSecurityScopedResource() else {
@@ -255,32 +282,17 @@ class PadsViewModel: ObservableObject {
 
             try FileManager.default.copyItem(at: selectedFile, to: savedURL)
 
-            let padName = savedURL.deletingPathExtension().lastPathComponent
-            let newPad = SoundPad(name: padName, fileURL: savedURL, isDefault: false)
+            // ✅ Save for later
+            pendingPadURL = savedURL
+            isNamingNewPad = true
 
-            // Handle different scenarios
-            if let index = editingPadIndex {
-                // Editing existing pad
-                pads[index] = newPad
-                editingPadIndex = nil
-            } else if let index = replacingPadIndex {
-                // Replacing existing pad
-                pads[index] = newPad
-                replacingPadIndex = nil
-            } else {
-                // Adding new pad
-                pads.append(newPad)
-            }
-            
-            selectedPadIndexForEdit = nil
-            saveCustomPads()
-            
         } catch {
             print("❌ Import error: \(error)")
             alertMessage = "Error importing file: \(error.localizedDescription)"
             showingAlert = true
         }
     }
+    
     
     // MARK: - Data Persistence
     
