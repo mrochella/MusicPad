@@ -89,14 +89,16 @@ class SavedTrack {
 @Model
 class TimelineItemData {
     var id: UUID
+    var index: Int? // Add index to maintain order
     var type: String // "sound" or "delay"
     var name: String? // for sound items
     var duration: Double? // for delay items
     var filePath: String? // for sound items
     var savedTrack: SavedTrack?
     
-    init(type: String, name: String? = nil, duration: Double? = nil, filePath: String? = nil) {
+    init(index: Int? = nil, type: String, name: String? = nil, duration: Double? = nil, filePath: String? = nil) {
         self.id = UUID()
+        self.index = index
         self.type = type
         self.name = name
         self.duration = duration

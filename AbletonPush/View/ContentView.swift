@@ -107,6 +107,18 @@ struct ContentView: View {
                     print("ViewModel timelineItems count changed to: \(count)")
                     utilityViewModel.updateTimelineEmptyState(count == 0)
                 }
+                // Tambahkan custom modal overlay di sini
+                if utilityViewModel.showingSaveModal {
+                    SaveTrackModal(
+                        isPresented: $utilityViewModel.showingSaveModal,
+                        onSave: { trackName in
+                            utilityViewModel.saveTrack(withName: trackName)
+                        },
+                        isProcessing: timelineCompositionService.isProcessing,
+                        progress: timelineCompositionService.progress
+                    )
+                    .zIndex(1)
+                }
             }
             .navigationBarHidden(true)
             .onAppear {
@@ -136,16 +148,6 @@ struct ContentView: View {
                 ) { duration in
                     viewModel.addDelayToTimeline(duration: duration)
                 }
-            }
-            .sheet(isPresented: $utilityViewModel.showingSaveModal) {
-                SaveTrackModal(
-                    isPresented: $utilityViewModel.showingSaveModal,
-                    onSave: { trackName in
-                        utilityViewModel.saveTrack(withName: trackName)
-                    },
-                    isProcessing: timelineCompositionService.isProcessing,
-                    progress: timelineCompositionService.progress
-                )
             }
             .alert("Error", isPresented: $viewModel.showingAlert) {
                 Button("OK") {}

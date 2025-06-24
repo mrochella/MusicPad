@@ -171,9 +171,19 @@ struct TrackCard: View {
                     .fontWeight(.semibold)
                     .foregroundColor(.black)
                 
-                Text(formatDuration(track.duration))
-                    .font(.caption)
-                    .foregroundColor(.black.opacity(0.6))
+                HStack {
+                    Text(formatDuration(track.duration))
+                        .font(.caption)
+                        .foregroundColor(.black.opacity(0.6))
+                    
+                    Text("•")
+                        .font(.caption)
+                        .foregroundColor(.black.opacity(0.4))
+                    
+                    Text("\(track.timelineItems.count) items")
+                        .font(.caption)
+                        .foregroundColor(.black.opacity(0.6))
+                }
                 
                 Text(formatDate(track.createdAt))
                     .font(.caption2)

@@ -28,7 +28,7 @@ class TimelineCompositionService: ObservableObject {
         
         print("🎵 Saving timeline composition: \(trackName)")
         
-        // Convert timeline items to data
+        // Convert timeline items to data with index
         var timelineData: [TimelineItemData] = []
         var totalDuration: Double = 0
         
@@ -38,6 +38,7 @@ class TimelineCompositionService: ObservableObject {
                 let duration = await getAudioDuration(for: sound.fileURL)
                 
                 let timelineItem = TimelineItemData(
+                    index: index,
                     type: "sound",
                     name: sound.name,
                     duration: duration,
@@ -49,6 +50,7 @@ class TimelineCompositionService: ObservableObject {
             } else if let delay = item as? DelayItem {
                 // For delays, store the duration
                 let timelineItem = TimelineItemData(
+                    index: index,
                     type: "delay",
                     name: nil,
                     duration: delay.duration,
@@ -112,10 +114,17 @@ class TimelineCompositionService: ObservableObject {
         // Stop any currently playing audio
         stopAllAudio()
         
+        // Sort timeline items by index to maintain order
+        let sortedTimelineItems = track.timelineItems.sorted { $0.index ?? 0 < $1.index ?? 0 }
+        
+        print("🎵 Playing \(sortedTimelineItems.count) items in order")
+        
         // Play each item in sequence
         var currentDelay: Double = 0
         
-        for timelineItem in track.timelineItems {
+        for (index, timelineItem) in sortedTimelineItems.enumerated() {
+            print("🎵 Playing item \(index + 1): \(timelineItem.type) at index \(timelineItem.index)")
+            
             if timelineItem.type == "sound", let filePath = timelineItem.filePath {
                 // Play sound after delay
                 await playSoundAfterDelay(filePath: filePath, delay: currentDelay)

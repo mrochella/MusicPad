@@ -60,7 +60,7 @@ class AudioConcatenationService: ObservableObject {
                 audioSegments.append(audioFile)
                 
                 let timelineItem = TimelineItemData(
-                    type: "sound",
+                    index: index, type: "sound",
                     name: sound.name,
                     duration: nil,
                     filePath: sound.fileURL.path
@@ -80,7 +80,7 @@ class AudioConcatenationService: ObservableObject {
                 audioSegments.append(silenceFile)
                 
                 let timelineItem = TimelineItemData(
-                    type: "delay",
+                    index: index, type: "delay",
                     name: nil,
                     duration: delay.duration,
                     filePath: nil
