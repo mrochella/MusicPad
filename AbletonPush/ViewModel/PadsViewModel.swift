@@ -35,17 +35,17 @@ class PadsViewModel: ObservableObject {
     private var audioPlayers: [UUID: AVAudioPlayer] = [:]
     private let recorder = AudioRecorder()
     
+    init(modelContext: ModelContext) {
+        self.modelContext = modelContext
+        setupAudioSession()
+        loadPads()
+    }
+    
     // Computed property to convert SoundPadEntity to SoundPad
     var pads: [SoundPad] {
         let convertedPads = soundPadEntities.map { $0.asSoundPad }
         print("🎵 Pads computed property called - \(convertedPads.count) pads available")
         return convertedPads
-    }
-    
-    init(modelContext: ModelContext) {
-        self.modelContext = modelContext
-        setupAudioSession()
-        loadPads()
     }
     
     // MARK: - Data Loading

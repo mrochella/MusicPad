@@ -15,6 +15,7 @@ struct ContentView: View {
     @Environment(\.modelContext) var modelContext
     @StateObject private var viewModel: PadsViewModel
     @StateObject private var utilityViewModel = UtilityButtonsViewModel()
+    @State private var navigationPath = NavigationPath()
     
     private let columns = Array(repeating: GridItem(.flexible()), count: 4)
     
@@ -27,7 +28,7 @@ struct ContentView: View {
     }
     
     var body: some View {
-        NavigationView {
+        NavigationStack(path: $navigationPath) {
             ZStack {
                 LinearGradient(
                     gradient: Gradient(colors: [
@@ -58,7 +59,10 @@ struct ContentView: View {
                         onMoveItem: { fromIndex, toIndex in
                             viewModel.moveItemInTimeline(from: fromIndex, to: toIndex)
                         },
-                        isEditMode: viewModel.isEditMode
+                        isEditMode: viewModel.isEditMode,
+                        moveToMyTrack: { 
+                            navigationPath.append(NavDestination.MyTracksView)
+                        }
                     )
 
                     UtilityButtons(
@@ -67,6 +71,7 @@ struct ContentView: View {
                         onPlayPause: { utilityViewModel.handlePlayPause() },
                         onEdit: { utilityViewModel.handleEdit() },
                         onDelay: { utilityViewModel.handleDelay() },
+                        onSave: { print("Save pressed") },
                         isLoopEnabled: utilityViewModel.isLoopEnabled,
                         isPlaying: utilityViewModel.isPlaying,
                         isTimelineEmpty: viewModel.timelineItems.isEmpty
@@ -159,8 +164,13 @@ struct ContentView: View {
                 }
                 Button("Cancel", role: .cancel) {}
             }
+            .navigationDestination(for: NavDestination.self) { destination in
+                switch destination {
+                case .MyTracksView:
+                    MyTracksView()
+                }
+            }
         }
-        .navigationViewStyle(StackNavigationViewStyle())
         .alert("Name Your Sound", isPresented: $viewModel.isNamingNewPad) {
             TextField("Enter name", text: $viewModel.newPadName)
             Button("Save") {

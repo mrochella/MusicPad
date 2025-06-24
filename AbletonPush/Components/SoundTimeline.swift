@@ -13,6 +13,7 @@ struct SoundTimeline: View {
     let onRemoveItem: (Int) -> Void
     let onMoveItem: (Int, Int) -> Void
     let isEditMode: Bool
+    let moveToMyTrack: () -> Void
     
     
 
@@ -28,9 +29,9 @@ struct SoundTimeline: View {
 
                 Spacer()
 
-                Text("Drag to reorder")
-                    .font(.caption)
-                    .foregroundColor(.black.opacity(0.8))
+                Button("My Tracks") {
+                    moveToMyTrack()
+                }
             }
             .padding()
             .background(Color.clear) // ✅ make header background clear
@@ -272,7 +273,8 @@ struct TimelineDelayItem: View {
             onSoundTap: { sound in print("Timeline sound tapped: \(sound.name)") },
             onRemoveItem: { index in print("Remove item at index: \(index)") },
             onMoveItem: { fromIndex, toIndex in print("Move item from \(fromIndex) to \(toIndex)") },
-            isEditMode: true
+            isEditMode: true,
+            moveToMyTrack: {  }
         )
     }
 }
