@@ -65,4 +65,41 @@ struct DelayItem: Identifiable, Equatable {
 struct PadInfo: Codable {
     let name: String
     let path: String
+}
+
+@Model
+class SavedTrack {
+    var id: UUID
+    var name: String
+    var filePath: String
+    var createdAt: Date
+    var duration: Double
+    @Relationship(deleteRule: .cascade) var timelineItems: [TimelineItemData]
+    
+    init(name: String, filePath: String, duration: Double, timelineItems: [TimelineItemData]) {
+        self.id = UUID()
+        self.name = name
+        self.filePath = filePath
+        self.createdAt = Date()
+        self.duration = duration
+        self.timelineItems = timelineItems
+    }
+}
+
+@Model
+class TimelineItemData {
+    var id: UUID
+    var type: String // "sound" or "delay"
+    var name: String? // for sound items
+    var duration: Double? // for delay items
+    var filePath: String? // for sound items
+    var savedTrack: SavedTrack?
+    
+    init(type: String, name: String? = nil, duration: Double? = nil, filePath: String? = nil) {
+        self.id = UUID()
+        self.type = type
+        self.name = name
+        self.duration = duration
+        self.filePath = filePath
+    }
 } 

@@ -15,14 +15,20 @@ class UtilityButtonsViewModel: ObservableObject {
     @Published var showingAlert = false
     @Published var alertMessage = ""
     @Published var isTimelineEmpty: Bool = true
+    @Published var showingSaveModal = false
     
     private var audioPlayers: [UUID: AVAudioPlayer] = [:]
     private weak var padsViewModel: PadsViewModel?
+    private var timelineCompositionService: TimelineCompositionService?
     
     // MARK: - Initialization
     
     func setPadsViewModel(_ viewModel: PadsViewModel) {
         self.padsViewModel = viewModel
+    }
+    
+    func setTimelineCompositionService(_ service: TimelineCompositionService) {
+        self.timelineCompositionService = service
     }
     
     // MARK: - Utility Button Handlers
@@ -87,6 +93,45 @@ class UtilityButtonsViewModel: ObservableObject {
     func handleDelay() {
         guard let padsVM = padsViewModel else { return }
         padsVM.showDelayInput()
+    }
+    
+    // MARK: - Save timeline composition
+    func handleSave() {
+        guard let padsVM = padsViewModel, !padsVM.timelineItems.isEmpty else {
+            alertMessage = "Timeline is empty. Add some sounds first!"
+            showingAlert = true
+            return
+        }
+        
+        showingSaveModal = true
+    }
+    
+    func saveTrack(withName name: String) {
+        guard let padsVM = padsViewModel,
+              let service = timelineCompositionService else {
+            alertMessage = "Service not available"
+            showingAlert = true
+            return
+        }
+        
+        Task {
+            do {
+                let savedTrack = try await service.saveTimelineComposition(padsVM.timelineItems, trackName: name)
+                
+                await MainActor.run {
+                    showingSaveModal = false
+                    alertMessage = "Track '\(savedTrack.name)' saved successfully!"
+                    showingAlert = true
+                }
+                
+            } catch {
+                await MainActor.run {
+                    showingSaveModal = false
+                    alertMessage = "Failed to save track: \(error.localizedDescription)"
+                    showingAlert = true
+                }
+            }
+        }
     }
     
     // MARK: - Audio Management

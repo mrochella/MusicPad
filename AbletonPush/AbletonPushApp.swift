@@ -14,6 +14,6 @@ struct AbletonPushApp: App {
         WindowGroup {
             ContentView()
         }
-        .modelContainer(for: SoundPadEntity.self)
+        .modelContainer(for: [SoundPadEntity.self, SavedTrack.self, TimelineItemData.self])
     }
 }

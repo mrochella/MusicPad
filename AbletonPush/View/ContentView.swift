@@ -15,16 +15,19 @@ struct ContentView: View {
     @Environment(\.modelContext) var modelContext
     @StateObject private var viewModel: PadsViewModel
     @StateObject private var utilityViewModel = UtilityButtonsViewModel()
+    @StateObject private var timelineCompositionService: TimelineCompositionService
     @State private var navigationPath = NavigationPath()
     
     private let columns = Array(repeating: GridItem(.flexible()), count: 4)
     
     init() {
         // Create a temporary modelContext for initialization
-        let container = try! ModelContainer(for: SoundPadEntity.self)
+        let container = try! ModelContainer(for: SoundPadEntity.self, SavedTrack.self, TimelineItemData.self)
         let tempContext = ModelContext(container)
         let tempViewModel = PadsViewModel(modelContext: tempContext)
+        let tempCompositionService = TimelineCompositionService(modelContext: tempContext)
         _viewModel = StateObject(wrappedValue: tempViewModel)
+        _timelineCompositionService = StateObject(wrappedValue: tempCompositionService)
     }
     
     var body: some View {
@@ -68,7 +71,7 @@ struct ContentView: View {
                         onPlayPause: { utilityViewModel.handlePlayPause() },
                         onEdit: { utilityViewModel.handleEdit() },
                         onDelay: { utilityViewModel.handleDelay() },
-                        onSave: { print("Save pressed") },
+                        onSave: { utilityViewModel.handleSave() },
                         isLoopEnabled: utilityViewModel.isLoopEnabled,
                         isPlaying: utilityViewModel.isPlaying,
                         isTimelineEmpty: viewModel.timelineItems.isEmpty
@@ -98,6 +101,7 @@ struct ContentView: View {
                 .background(Color.clear)
                 .onAppear {
                     utilityViewModel.setPadsViewModel(viewModel)
+                    utilityViewModel.setTimelineCompositionService(timelineCompositionService)
                 }
                 .onChange(of: viewModel.timelineItems.count) { count in
                     print("ViewModel timelineItems count changed to: \(count)")
@@ -108,6 +112,7 @@ struct ContentView: View {
             .onAppear {
                 // Update the viewModel with the correct modelContext if needed
                 utilityViewModel.setPadsViewModel(viewModel)
+                utilityViewModel.setTimelineCompositionService(timelineCompositionService)
             }
             .onChange(of: viewModel.timelineItems.count) { count in
                 print("ViewModel timelineItems count changed to: \(count)")
@@ -132,10 +137,25 @@ struct ContentView: View {
                     viewModel.addDelayToTimeline(duration: duration)
                 }
             }
+            .sheet(isPresented: $utilityViewModel.showingSaveModal) {
+                SaveTrackModal(
+                    isPresented: $utilityViewModel.showingSaveModal,
+                    onSave: { trackName in
+                        utilityViewModel.saveTrack(withName: trackName)
+                    },
+                    isProcessing: timelineCompositionService.isProcessing,
+                    progress: timelineCompositionService.progress
+                )
+            }
             .alert("Error", isPresented: $viewModel.showingAlert) {
                 Button("OK") {}
             } message: {
                 Text(viewModel.alertMessage)
+            }
+            .alert("Save Track", isPresented: $utilityViewModel.showingAlert) {
+                Button("OK") {}
+            } message: {
+                Text(utilityViewModel.alertMessage)
             }
             .confirmationDialog("Add New Sound", isPresented: $viewModel.showAddOptions, titleVisibility: .visible) {
                 Button("Import File") {
@@ -186,5 +206,5 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-        .modelContainer(for: SoundPadEntity.self)
+        .modelContainer(for: [SoundPadEntity.self, SavedTrack.self, TimelineItemData.self])
 }
