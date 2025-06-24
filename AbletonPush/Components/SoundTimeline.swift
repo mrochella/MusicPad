@@ -14,8 +14,6 @@ struct SoundTimeline: View {
     let onMoveItem: (Int, Int) -> Void
     let isEditMode: Bool
     
-    
-
     @State private var draggedIndex: Int?
 
     var body: some View {
@@ -24,13 +22,13 @@ struct SoundTimeline: View {
                 Text("Timeline")
                     .font(.headline)
                     .fontWeight(.semibold)
-                    .foregroundColor(.black.opacity(0.8))
+                    .foregroundColor(.white.opacity(0.8))
 
                 Spacer()
 
                 Text("Drag to reorder")
                     .font(.caption)
-                    .foregroundColor(.black.opacity(0.8))
+                    .foregroundColor(.white.opacity(0.8))
             }
             .padding()
             .background(Color.clear) // ✅ make header background clear
@@ -98,18 +96,14 @@ struct SoundTimeline: View {
                         VStack(spacing: 6) {
                             Image(systemName: "square.dashed")
                                 .font(.title)
-                                .foregroundColor(.black.opacity(0.5))
+                                .foregroundColor(.white.opacity(0.8))
 
                             Text("No items")
                                 .font(.caption)
-                                .foregroundColor(.black.opacity(0.5))
+                                .foregroundColor(.white.opacity(0.8))
                         }
                         .frame(width: 800, height: 180)
-                        .background(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(Color.black.opacity(0.5), lineWidth: 2)
-                                .background(Color.clear)
-                        )
+                        .frame(maxWidth: .infinity, alignment: .center)
                     }
                 }
                 .padding(.horizontal)
@@ -170,20 +164,58 @@ struct TimelineSoundItem: View {
                 VStack(spacing: 4) {
                     Image(systemName: "waveform")
                         .font(.system(size: 24, weight: .medium))
-                        .foregroundColor(.white)
+                        .foregroundStyle(
+                            LinearGradient(
+                                gradient: Gradient(colors: [
+                                    Color(hex: "#1e1b33"),
+                                    Color(hex: "#0f1021")
+                                ]),
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                        )
 
                     Text(sound.name)
                         .font(.caption)
                         .fontWeight(.medium)
-                        .foregroundColor(.white)
                         .lineLimit(1)
+                        .overlay(
+                            LinearGradient(
+                                gradient: Gradient(colors: [
+                                    Color(hex: "#1e1b33"),
+                                    Color(hex: "#0f1021")
+                                ]),
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                        )
+                        .mask(
+                            Text(sound.name)
+                                .font(.caption)
+                                .fontWeight(.medium)
+                                .lineLimit(1)
+                        )
                 }
                 .frame(width: 80, height: 180)
                 .background(
                     RoundedRectangle(cornerRadius: 8)
                         .fill(sound.isDefault ?
-                              LinearGradient(colors: [.blue.opacity(0.8), .blue.opacity(0.6)], startPoint: .top, endPoint: .bottom) :
-                              LinearGradient(colors: [.green.opacity(0.8), .green.opacity(0.6)], startPoint: .top, endPoint: .bottom)
+                              LinearGradient(
+                                  colors: [
+                                      Color(hex: "#88bbdd"),
+                                      Color(hex: "#88aadd")
+                                  ],
+                                  startPoint: .top,
+                                  endPoint: .bottom
+                              ) :
+                                LinearGradient(
+                                    colors: [
+                                        Color(hex: "#88bbdd"),
+                                        Color(hex: "#88aadd")
+                                    ],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
                         )
                 )
                 .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 2)
@@ -213,20 +245,51 @@ struct TimelineDelayItem: View {
     var body: some View {
         ZStack(alignment: .topTrailing) {
             VStack(spacing: 4) {
+                // Gradient-filled SF Symbol
                 Image(systemName: "clock")
                     .font(.system(size: 24, weight: .medium))
-                    .foregroundColor(.white)
+                    .foregroundStyle(
+                        LinearGradient(
+                            gradient: Gradient(colors: [
+                                Color(hex: "#1e1b33"),
+                                Color(hex: "#0f1021")
+                            ]),
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
 
-                Text("\(String(format: "%.1f", delay.duration))s")
+                // Gradient-filled text using overlay + mask
+                let durationText = Text("\(String(format: "%.1f", delay.duration))s")
                     .font(.caption)
                     .fontWeight(.medium)
-                    .foregroundColor(.white)
                     .lineLimit(1)
+
+                durationText
+                    .overlay(
+                        LinearGradient(
+                            gradient: Gradient(colors: [
+                                Color(hex: "#1e1b33"),
+                                Color(hex: "#0f1021")
+                            ]),
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+                    .mask(durationText)
             }
             .frame(width: 80, height: 180)
             .background(
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(LinearGradient(colors: [.orange.opacity(0.8), .orange.opacity(0.6)], startPoint: .top, endPoint: .bottom)
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                Color(hex: "#fff5a1"),
+                                Color(hex: "#ffe75e")
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
                     )
             )
             .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 2)

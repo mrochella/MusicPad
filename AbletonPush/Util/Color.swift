@@ -5,13 +5,6 @@
 //  Created by Megan Rochella on 23/06/25.
 //
 
-//
-//  Color.swift
-//  AbletonPush
-//
-//  Created by Megan Rochella on 23/06/25.
-//
-
 import SwiftUI
 
 extension Color {
