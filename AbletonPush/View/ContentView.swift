@@ -106,8 +106,32 @@ struct ContentView: View {
                     print("ViewModel timelineItems count changed to: \(count)")
                     utilityViewModel.updateTimelineEmptyState(count == 0)
                 }
-                // Tambahkan custom modal overlay di sini
+                
+                if viewModel.showingDelayInput {
+                    // Dim background
+                    Color.black.opacity(0.5)
+                        .ignoresSafeArea()
+                        .transition(.opacity)
+                        .zIndex(1)
+
+                    // Modal
+                    DelayInputModal(
+                        isPresented: $viewModel.showingDelayInput
+                    ) { duration in
+                        viewModel.addDelayToTimeline(duration: duration)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .padding()
+                    .zIndex(2)
+                }
+                
                 if utilityViewModel.showingSaveModal {
+                    Color.black.opacity(0.5)
+                        .ignoresSafeArea()
+                        .transition(.opacity)
+                        .zIndex(1)
+
+                    // Modal
                     SaveTrackModal(
                         isPresented: $utilityViewModel.showingSaveModal,
                         onSave: { trackName in
@@ -116,7 +140,9 @@ struct ContentView: View {
                         isProcessing: timelineCompositionService.isProcessing,
                         progress: timelineCompositionService.progress
                     )
-                    .zIndex(1)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .padding()
+                    .zIndex(2)
                 }
             }
             .navigationBarHidden(true)
@@ -139,13 +165,6 @@ struct ContentView: View {
             .sheet(isPresented: $viewModel.showingRecorderSheet) {
                 RecordingSheet(recorder: viewModel.recorderInstance) { fileURL in
                     viewModel.handleRecordingCompletion(fileURL: fileURL)
-                }
-            }
-            .sheet(isPresented: $viewModel.showingDelayInput) {
-                DelayInputModal(
-                    isPresented: $viewModel.showingDelayInput
-                ) { duration in
-                    viewModel.addDelayToTimeline(duration: duration)
                 }
             }
             .alert("Error", isPresented: $viewModel.showingAlert) {

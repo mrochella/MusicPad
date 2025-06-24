@@ -39,11 +39,11 @@ struct SoundTimeline: View {
                 VStack(spacing: 6) {
                     Image(systemName: "square.dashed")
                         .font(.title)
-                        .foregroundColor(.white.opacity(0.8))
+                        .foregroundColor(.white)
 
                     Text("No items")
                         .font(.caption)
-                        .foregroundColor(.white.opacity(0.8))
+                        .foregroundColor(.white)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {

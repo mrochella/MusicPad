@@ -69,6 +69,7 @@ struct SaveTrackModal: View {
             }
         }
         .padding(24)
+        .frame(maxWidth: 360) // Limit width to make it not too wide
         .background(
             RoundedRectangle(cornerRadius: 16)
                 .fill(
@@ -97,4 +98,4 @@ struct SaveTrackModal: View {
         isProcessing: false,
         progress: 0.0
     )
-} 
+}
