@@ -145,7 +145,7 @@ class UtilityButtonsViewModel: ObservableObject {
         // Calculate total duration of timeline
         var totalDuration: Double = 0
         for item in timelineItems {
-            if let sound = item as? SoundPad {
+            if item is SoundPad {
                 totalDuration += 0.25 // Default delay between sounds
             } else if let delay = item as? DelayItem {
                 totalDuration += delay.duration
@@ -155,7 +155,7 @@ class UtilityButtonsViewModel: ObservableObject {
         // play sound with delay
         var currentDelay: Double = 0
         
-        for (index, item) in timelineItems.enumerated() {
+        for (_, item) in timelineItems.enumerated() {
             if let sound = item as? SoundPad {
                 DispatchQueue.main.asyncAfter(deadline: .now() + currentDelay) {
                     if self.isPlaying { // Check if still playing

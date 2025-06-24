@@ -13,6 +13,7 @@ struct UtilityButtons: View {
     let onPlayPause: () -> Void
     let onEdit: () -> Void
     let onDelay: () -> Void
+    let onSave: () -> Void
 
     // State parameters for dynamic UI
     let isLoopEnabled: Bool
@@ -21,6 +22,7 @@ struct UtilityButtons: View {
 
     var body: some View {
         HStack(spacing: 12) {
+            UtilityButton(title: "Delay", icon: "clock", action: onDelay)
             UtilityButton(
                 title: "Loop",
                 icon: isLoopEnabled ? "repeat.circle.fill" : "repeat",
@@ -28,15 +30,26 @@ struct UtilityButtons: View {
                 isActive: isLoopEnabled,
                 isTimelineEmpty: isTimelineEmpty
             )
-            UtilityButton(title: "Reset", icon: "arrow.clockwise", action: onReset)
             UtilityButton(
                 title: isPlaying ? "Pause" : "Play",
                 icon: isPlaying ? "pause" : "play",
                 action: onPlayPause,
                 isTimelineEmpty: isTimelineEmpty
             )
+            UtilityButton(
+                title: "Reset",
+                icon: "arrow.clockwise",
+                action: onReset,
+                isTimelineEmpty: isTimelineEmpty
+            )
+            
             UtilityButton(title: "Edit", icon: "pencil", action: onEdit)
-            UtilityButton(title: "Delay", icon: "clock", action: onDelay)
+            UtilityButton(
+                title: "Save",
+                icon: "square.and.arrow.down",
+                action: onSave, // ini nanti diganti onSave
+                isTimelineEmpty: isTimelineEmpty
+            )
         }
         .padding()
         .background(Color.clear) // ✅ allow gradient to pass through
@@ -120,6 +133,7 @@ struct UtilityButton: View {
                 onPlayPause: { print("Play tapped") },
                 onEdit: { print("Edit tapped") },
                 onDelay: { print("Delay tapped") },
+                onSave: { print("Save tapped") },
                 isLoopEnabled: true,
                 isPlaying: false,
                 isTimelineEmpty: false
