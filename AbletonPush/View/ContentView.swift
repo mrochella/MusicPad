@@ -73,7 +73,6 @@ struct ContentView: View {
                         isPlaying: utilityViewModel.isPlaying,
                         isTimelineEmpty: viewModel.timelineItems.isEmpty
                     )
-                    .padding(.vertical)
 
                     PadsGridView(
                         pads: viewModel.pads,

@@ -20,10 +20,10 @@ struct SoundTimeline: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text("Timeline")
+                Text("Arrangements")
                     .font(.headline)
                     .fontWeight(.semibold)
-                    .foregroundColor(.white.opacity(0.8))
+                    .foregroundColor(.white)
 
                 Spacer()
 
@@ -32,85 +32,86 @@ struct SoundTimeline: View {
                 }
             }
             .padding()
-            .background(Color.clear) // ✅ make header background clear
+            .background(Color.clear)
 
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
-                    ForEach(Array(timelineItems.enumerated()), id: \.offset) { index, item in
-                        if let sound = item as? SoundPad {
-                            TimelineSoundItem(
-                                sound: sound,
-                                index: index,
-                                onTap: {
-                                    onSoundTap(sound)
-                                },
-                                onRemove: {
-                                    onRemoveItem(index)
-                                },
-                                isEditMode: isEditMode
-                            )
-                            .onDrag {
-                                draggedIndex = index
-                                let provider = NSItemProvider()
-                                provider.registerDataRepresentation(forTypeIdentifier: "public.text", visibility: .all) { completion in
-                                    let data = "\(index)".data(using: .utf8)
-                                    completion(data, nil)
-                                    return nil
-                                }
-                                return provider
-                            }
-                            .onDrop(of: [.text], delegate: DropViewDelegate(
-                                item: sound,
-                                index: index,
-                                onMoveItem: onMoveItem,
-                                onDragEnd: { draggedIndex = nil }
-                            ))
-                        } else if let delay = item as? DelayItem {
-                            TimelineDelayItem(
-                                delay: delay,
-                                index: index,
-                                onRemove: {
-                                    onRemoveItem(index)
-                                },
-                                isEditMode: isEditMode
-                            )
-                            .onDrag {
-                                draggedIndex = index
-                                let provider = NSItemProvider()
-                                provider.registerDataRepresentation(forTypeIdentifier: "public.text", visibility: .all) { completion in
-                                    let data = "\(index)".data(using: .utf8)
-                                    completion(data, nil)
-                                    return nil
-                                }
-                                return provider
-                            }
-                            .onDrop(of: [.text], delegate: DropViewDelegate(
-                                item: delay,
-                                index: index,
-                                onMoveItem: onMoveItem,
-                                onDragEnd: { draggedIndex = nil }
-                            ))
-                        }
-                    }
-                    
-                    if timelineItems.isEmpty {
-                        VStack(spacing: 6) {
-                            Image(systemName: "square.dashed")
-                                .font(.title)
-                                .foregroundColor(.white.opacity(0.8))
+            if timelineItems.isEmpty {
+                // Empty state - centered
+                VStack(spacing: 6) {
+                    Image(systemName: "square.dashed")
+                        .font(.title)
+                        .foregroundColor(.white.opacity(0.8))
 
-                            Text("No items")
-                                .font(.caption)
-                                .foregroundColor(.white.opacity(0.8))
-                        }
-                        .frame(width: 800, height: 180)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                    }
+                    Text("No items")
+                        .font(.caption)
+                        .foregroundColor(.white.opacity(0.8))
                 }
-                .padding(.horizontal)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                // Timeline items
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 12) {
+                        ForEach(Array(timelineItems.enumerated()), id: \.offset) { index, item in
+                            if let sound = item as? SoundPad {
+                                TimelineSoundItem(
+                                    sound: sound,
+                                    index: index,
+                                    onTap: {
+                                        onSoundTap(sound)
+                                    },
+                                    onRemove: {
+                                        onRemoveItem(index)
+                                    },
+                                    isEditMode: isEditMode
+                                )
+                                .onDrag {
+                                    draggedIndex = index
+                                    let provider = NSItemProvider()
+                                    provider.registerDataRepresentation(forTypeIdentifier: "public.text", visibility: .all) { completion in
+                                        let data = "\(index)".data(using: .utf8)
+                                        completion(data, nil)
+                                        return nil
+                                    }
+                                    return provider
+                                }
+                                .onDrop(of: [.text], delegate: DropViewDelegate(
+                                    item: sound,
+                                    index: index,
+                                    onMoveItem: onMoveItem,
+                                    onDragEnd: { draggedIndex = nil }
+                                ))
+                            } else if let delay = item as? DelayItem {
+                                TimelineDelayItem(
+                                    delay: delay,
+                                    index: index,
+                                    onRemove: {
+                                        onRemoveItem(index)
+                                    },
+                                    isEditMode: isEditMode
+                                )
+                                .onDrag {
+                                    draggedIndex = index
+                                    let provider = NSItemProvider()
+                                    provider.registerDataRepresentation(forTypeIdentifier: "public.text", visibility: .all) { completion in
+                                        let data = "\(index)".data(using: .utf8)
+                                        completion(data, nil)
+                                        return nil
+                                    }
+                                    return provider
+                                }
+                                .onDrop(of: [.text], delegate: DropViewDelegate(
+                                    item: delay,
+                                    index: index,
+                                    onMoveItem: onMoveItem,
+                                    onDragEnd: { draggedIndex = nil }
+                                ))
+                            }
+                        }
+                    }
+                    .padding(.horizontal)
+                    .background(Color.clear)
+                }
                 .background(Color.clear)
             }
-            .background(Color.clear)
         }
         .frame(height: 300)
         .background(Color.clear)
