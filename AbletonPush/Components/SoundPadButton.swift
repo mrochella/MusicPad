@@ -19,19 +19,28 @@ struct SoundPadButton: View {
                 Text(pad.name.uppercased())
                     .font(.caption)
                     .fontWeight(.semibold)
-                    .foregroundColor(.white)
+                    .foregroundColor(.black.opacity(0.7))
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
 
                 Text("#\(index + 1)")
                     .font(.caption2)
-                    .foregroundColor(.white.opacity(0.7))
+                    .foregroundColor(.black.opacity(0.7))
             }
             .padding()
             .frame(maxWidth: .infinity, minHeight: 80)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.black.opacity(0.3))
+                    .fill(
+                        LinearGradient(
+                            gradient: Gradient(colors: [
+                                Color(hex: "#cceeff"),
+                                Color(hex: "#cce2ff")
+                            ]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
                 
             )
         }

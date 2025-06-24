@@ -32,16 +32,13 @@ struct ContentView: View {
             ZStack {
                 LinearGradient(
                     gradient: Gradient(colors: [
-                        Color(hex: "#cceeff"),
-                        Color(hex: "#cce2ff"),
-                        Color.white
+                        Color(hex: "#1e1b33"),
+                        Color(hex: "#0f1021")
                     ]),
                     startPoint: .top,
                     endPoint: .bottom
                 )
                 .ignoresSafeArea()
-                
-                
                 
                 VStack(spacing: 0) {
                     HeaderView {
