@@ -14,13 +14,21 @@ struct UtilityButtons: View {
     let onEdit: () -> Void
     let onDelay: () -> Void
     let onSave: () -> Void
-
-    // State parameters for dynamic UI
     let isLoopEnabled: Bool
     let isPlaying: Bool
     let isTimelineEmpty: Bool
 
     var body: some View {
+        HStack {
+            Text("Tools")
+                .font(.headline)
+                .fontWeight(.semibold)
+                .foregroundColor(.white)
+            
+            Spacer()
+                }
+        .padding()
+        
         HStack(spacing: 12) {
             UtilityButton(title: "Delay", icon: "clock", action: onDelay)
             UtilityButton(
@@ -52,7 +60,7 @@ struct UtilityButtons: View {
             )
         }
         .padding()
-        .background(Color.clear) // ✅ allow gradient to pass through
+        .background(Color.clear)
     }
 }
 
@@ -76,21 +84,15 @@ struct UtilityButton: View {
             VStack(spacing: 4) {
                 Image(systemName: icon)
                     .font(.system(size: 20, weight: .medium))
-                    .foregroundColor(isTimelineEmpty == true ? .gray : .black)
+                    .foregroundColor(isTimelineEmpty == true ? .gray : Color(hex: "#0f1021"))
 
                 Text(title)
                     .font(.system(size: 12, weight: .medium))
-                    .foregroundColor(isTimelineEmpty == true ? .gray : .black)
+                    .foregroundColor(isTimelineEmpty == true ? .gray : Color(hex: "#0f1021"))
             }
             .frame(height: 80)
             .frame(maxWidth: .infinity)
             .background(
-//                RoundedRectangle(cornerRadius: 8)
-//                    .fill(isTimelineEmpty == true ? Color.gray.opacity(0.3) : Color.blue)
-//                    .shadow(
-//                        color: isTimelineEmpty == true ? .clear : Color.yellow.opacity(0.6),
-//                        radius: 8, x: 0, y: 0
-//                    )
                 ZStack {
                     if isTimelineEmpty == true {
                         RoundedRectangle(cornerRadius: 8)

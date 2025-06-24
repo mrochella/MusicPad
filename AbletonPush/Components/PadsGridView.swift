@@ -19,6 +19,16 @@ struct PadsGridView: View {
     let isEditMode: Bool
 
     var body: some View {
+        HStack {
+            Text("Sources")
+                .font(.headline)
+                .fontWeight(.semibold)
+                .foregroundColor(.white)
+            
+            Spacer()
+                }
+        .padding()
+        
         ScrollView {
             LazyVGrid(columns: columns, spacing: 12) {
                 ForEach(Array(pads.enumerated()), id: \.element.id) { index, pad in
@@ -46,7 +56,7 @@ struct PadsGridView: View {
             }
             .padding()
         }
-        .background(Color.clear) // ✅ Transparent to allow parent background to show
+        .background(Color.clear)
     }
 }
 

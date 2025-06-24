@@ -13,7 +13,7 @@ struct AddPadButton: View {
 
     var body: some View {
         Button(action: onTap) {
-            VStack {
+            VStack(spacing: 8) {
                 Image(systemName: "plus")
                     .font(.title)
                     .foregroundColor(.white.opacity(0.8))
@@ -21,14 +21,15 @@ struct AddPadButton: View {
                     .font(.caption)
                     .foregroundColor(.white.opacity(0.8))
             }
-            .frame(height: 80)
             .frame(maxWidth: .infinity)
+            .frame(height: 160)
             .background(
                 RoundedRectangle(cornerRadius: 8)
                     .stroke(Color.white.opacity(0.8), lineWidth: 2)
-                    .background(Color.clear)
             )
+            .contentShape(Rectangle())
         }
+        .buttonStyle(PlainButtonStyle())
     }
 }
 
@@ -36,6 +37,6 @@ struct AddPadButton: View {
     AddPadButton {
         print("Add pad tapped")
     }
-    .frame(width: 100, height: 100)
+    .frame(width: 200, height: 200)
     .background(Color.black)
 }

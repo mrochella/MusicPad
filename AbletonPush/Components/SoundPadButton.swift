@@ -16,19 +16,43 @@ struct SoundPadButton: View {
     var body: some View {
         Button(action: onTap) {
             VStack(spacing: 6) {
-                Text(pad.name.uppercased())
-                    .font(.caption)
+                let nameText = Text(pad.name.uppercased())
+                    .font(.body)
                     .fontWeight(.semibold)
-                    .foregroundColor(.black.opacity(0.7))
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
 
-                Text("#\(index + 1)")
-                    .font(.caption2)
-                    .foregroundColor(.black.opacity(0.7))
+                nameText
+                    .overlay(
+                        LinearGradient(
+                            gradient: Gradient(colors: [
+                                Color(hex: "#1e1b33"),
+                                Color(hex: "#0f1021")
+                            ]),
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+                    .mask(nameText)
+
+                let indexText = Text("#\(index + 1)")
+                    .font(.caption)
+
+                indexText
+                    .overlay(
+                        LinearGradient(
+                            gradient: Gradient(colors: [
+                                Color(hex: "#1e1b33"),
+                                Color(hex: "#0f1021")
+                            ]),
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+                    .mask(indexText)
             }
             .padding()
-            .frame(maxWidth: .infinity, minHeight: 80)
+            .frame(maxWidth: .infinity, minHeight: 160)
             .background(
                 RoundedRectangle(cornerRadius: 12)
                     .fill(
